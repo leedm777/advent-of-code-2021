@@ -1,11 +1,28 @@
 mod day01;
 mod util;
 
-fn main() {
-    let d01 = util::file_as_numbers("./src/day01.txt");
-    let d01p1 = day01::part1(&d01);
-    let d01p2 = day01::part2(&d01);
+fn ex<T, F1, F2>(day: i32, input: &T, p1: F1, p2: F2)
+where
+    F1: Fn(&T) -> i32,
+    F2: Fn(&T) -> i32,
+{
+    let n1 = std::time::Instant::now();
+    let r1 = p1(input);
+    let t1 = n1.elapsed().as_secs_f64() * 1000.;
 
-    println!("Day 1, part 1: {}", d01p1);
-    println!("       part 2: {}", d01p2);
+    let n2 = std::time::Instant::now();
+    let r2 = p2(input);
+    let t2 = n2.elapsed().as_secs_f64() * 1000.;
+
+    println!("Day {},\tpart 1: {} ({:.3} ms)", day, r1, t1);
+    println!("       \tpart 2: {} ({:.3} ms)", r2, t2);
+}
+
+fn main() {
+    ex(
+        1,
+        &util::file_as_numbers("./src/day01.txt"),
+        day01::part1,
+        day01::part2,
+    );
 }
