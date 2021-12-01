@@ -9,7 +9,7 @@ fn part1(input: Vec<&str>) -> i32 {
         for c in s.chars() {
             let v = match counter.get(&c) {
                 Some(x) => x + 1,
-                None => 1
+                None => 1,
             };
             counter.insert(c, v);
         }
@@ -43,13 +43,7 @@ mod tests {
     #[test]
     fn test_part1_ex1() {
         let input = vec![
-            "abcdef",
-            "bababc",
-            "abbcde",
-            "abcccd",
-            "aabcdd",
-            "abcdee",
-            "ababab"
+            "abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab",
         ];
 
         let actual = part1(input);
