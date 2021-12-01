@@ -4,8 +4,12 @@ pub fn part1(input: &Vec<i32>) -> i32 {
 }
 
 pub fn part2(input: &Vec<i32>) -> i32 {
-    let avg = input.windows(3).map(|w| w[0] + w[1] + w[2]).collect();
-    return part1(&avg);
+    // let avg = input.windows(3).map(|w| w[0] + w[1] + w[2]).collect();
+    // return part1(&avg);
+    return input
+        .windows(4)
+        .map(|p| (p[0] + p[1] + p[2] < p[1] + p[2] + p[3]) as i32)
+        .sum();
 }
 
 #[cfg(test)]
