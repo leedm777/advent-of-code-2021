@@ -1,26 +1,18 @@
-use crate::util;
-
-fn part1(input: Vec<i32>) -> i32 {
-    let mut increases = 0;
-    let mut prior = i32::MAX;
-    for v in input {
-        if v > prior {
-            increases += 1;
-        }
-        prior = v;
-    }
-    return increases;
+pub fn part1(input: &Vec<i32>) -> i32 {
+    // improvement inspired by https://github.com/jeremylt/advent2021/blob/main/src/day01.rs
+    return input.windows(2).map(|p| (p[0] < p[1]) as i32).sum();
 }
 
-fn part2(input: Vec<i32>) -> i32 {
-    let avg = input.windows(3).map(|w| w.iter().sum()).collect();
-    return part1(avg);
+pub fn part2(input: &Vec<i32>) -> i32 {
+    let avg = input.windows(3).map(|w| w[0] + w[1] + w[2]).collect();
+    return part1(&avg);
 }
 
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
+    use crate::util;
 
     fn ex1() -> Vec<i32> {
         return vec![199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
@@ -32,25 +24,25 @@ mod tests {
 
     #[test]
     fn test_part1_ex1() {
-        let actual = part1(ex1());
+        let actual = part1(&ex1());
         assert_eq!(actual, 7);
     }
 
     #[test]
     fn test_part1_real() {
-        let actual = part1(real());
+        let actual = part1(&real());
         assert_eq!(actual, 1688);
     }
 
     #[test]
     fn test_part2_ex1() {
-        let actual = part2(ex1());
+        let actual = part2(&ex1());
         assert_eq!(actual, 5);
     }
 
     #[test]
     fn test_part2_real() {
-        let actual = part2(real());
+        let actual = part2(&real());
         assert_eq!(actual, 1728);
     }
 }

@@ -36,7 +36,6 @@ fn part2(input: Vec<i32>) -> i32 {
 
 #[cfg(test)]
 mod tests {
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
     fn ex1() -> Vec<i32> {
