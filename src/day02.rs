@@ -11,7 +11,7 @@ pub fn part1(input: &Vec<String>) -> i32 {
                 "forward" => (dist, 0),
                 "down" => (0, dist),
                 "up" => (0, -dist),
-                _ => (0, 0),
+                _ => panic!("Invalid direction {}", dir),
             };
         })
         .reduce(|(dx, dy), (x, y)| {
@@ -35,7 +35,7 @@ pub fn part2(input: &Vec<String>) -> i32 {
                 "forward" => (x + dist, y + dist * aim, aim),
                 "down" => (x, y, aim + dist),
                 "up" => (x, y, aim - dist),
-                _ => (0, 0, 0),
+                _ => panic!("Invalid direction {}", dir),
             };
         });
     return x * y;
