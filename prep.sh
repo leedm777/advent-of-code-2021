@@ -26,11 +26,11 @@ curl \
 cat <<EOF > src/day${day}.rs
 use crate::util;
 
-fn part1(input: Vec<i32>) -> i32 {
+fn part1(input: &Vec<i32>) -> i32 {
     return 0;
 }
 
-fn part2(input: Vec<i32>) -> i32 {
+fn part2(input: &Vec<i32>) -> i32 {
     return 0;
 }
 
@@ -38,12 +38,12 @@ fn part2(input: Vec<i32>) -> i32 {
 mod tests {
     use super::*;
 
-    fn ex1() -> Vec<i32> {
+    fn ex1() -> &Vec<i32> {
         return vec![
         ];
     }
 
-    fn real() -> Vec<i32> {
+    fn real() -> &Vec<i32> {
         return util::file_as_numbers("./src/day${day}.txt");
     }
 
