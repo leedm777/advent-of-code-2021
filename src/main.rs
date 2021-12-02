@@ -26,4 +26,11 @@ fn main() {
         day01::part1,
         day01::part2,
     );
+
+    ex(
+        2,
+        &util::file_as_strings("./src/day02.txt"),
+        day02::part1,
+        day02::part2,
+    )
 }

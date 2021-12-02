@@ -26,11 +26,11 @@ curl \
 cat <<EOF > src/day${day}.rs
 use crate::util;
 
-fn part1(input: &Vec<i32>) -> i32 {
+pub fn part1(input: &Vec<i32>) -> i32 {
     return 0;
 }
 
-fn part2(input: &Vec<i32>) -> i32 {
+pub fn part2(input: &Vec<i32>) -> i32 {
     return 0;
 }
 
