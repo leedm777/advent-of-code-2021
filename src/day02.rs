@@ -14,10 +14,9 @@ pub fn part1(input: &Vec<String>) -> i32 {
                 _ => panic!("Invalid direction {}", dir),
             };
         })
-        .reduce(|(dx, dy), (x, y)| {
+        .fold((0, 0), |(dx, dy), (x, y)| {
             return (x + dx, y + dy);
-        })
-        .unwrap();
+        });
     return x * y;
 }
 
