@@ -68,10 +68,6 @@ impl Game {
     fn find_winner(&self) -> Option<&Board> {
         return self.boards.iter().find(|board| board.is_winner());
     }
-
-    fn find_winner_index(&self) -> Option<usize> {
-        return self.boards.iter().position(|board| board.is_winner());
-    }
 }
 
 fn parse_board(input: &[String]) -> Board {
@@ -132,21 +128,21 @@ pub fn part2(input: &Vec<String>) -> i32 {
     let mut game = parse_game(input);
 
     let mut n = game.play();
-    let mut winner = game.find_winner_index();
+    let mut winner = game.find_winner();
 
     loop {
         match winner {
             Some(w) => {
                 if game.boards.len() == 1 {
-                    return n * game.boards.first().unwrap().score();
+                    return n * w.score();
                 } else {
-                    game.boards.remove(w);
+                    game.boards.retain(|b| !b.is_winner());
                     winner = None;
                 }
             }
             None => {
                 n = game.play();
-                winner = game.find_winner_index();
+                winner = game.find_winner();
             }
         }
     }
@@ -249,6 +245,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&real());
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 2980);
     }
 }

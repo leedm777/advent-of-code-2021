@@ -34,5 +34,20 @@ fn main() {
         &util::file_as_strings("./src/day02.txt"),
         day02::part1,
         day02::part2,
-    )
+    );
+
+    // TODO: FINISH
+    // ex(
+    //     3,
+    //     &util::file_as_strings("./src/day03.txt"),
+    //     day03::part1,
+    //     day03::part2,
+    // );
+
+    ex(
+        4,
+        &util::file_as_strings("./src/day04.txt"),
+        day04::part1,
+        day04::part2,
+    );
 }
