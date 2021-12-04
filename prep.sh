@@ -27,7 +27,6 @@ curl \
 head ${input}
 
 cat <<EOF > src/day${day}.rs
-use crate::util;
 
 pub fn part1(_input: &Vec<String>) -> i32 {
     return 0;
@@ -40,6 +39,7 @@ pub fn part2(_input: &Vec<String>) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util;
 
     fn ex1() -> Vec<String> {
         return vec![

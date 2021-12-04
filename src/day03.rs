@@ -1,5 +1,3 @@
-use crate::util;
-
 fn count_bits(input: &Vec<String>) -> Vec<i32> {
     let len = input[0].len();
     let init: Vec<i32> = (0..len).map(|_| 0).collect();
@@ -95,6 +93,7 @@ pub fn part2(input: &Vec<String>) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util;
 
     fn ex1() -> Vec<String> {
         return vec![

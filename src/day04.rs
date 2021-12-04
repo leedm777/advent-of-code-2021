@@ -1,5 +1,3 @@
-use crate::util;
-
 #[derive(Clone)]
 struct Board {
     grid: [[i32; 5]; 5],
@@ -151,6 +149,7 @@ pub fn part2(input: &Vec<String>) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util;
 
     fn ex0() -> Vec<String> {
         return vec![

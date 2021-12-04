@@ -1,5 +1,3 @@
-use crate::util;
-
 pub fn part1(input: &Vec<String>) -> i32 {
     let (x, y) = input
         .iter()
@@ -43,6 +41,7 @@ pub fn part2(input: &Vec<String>) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util;
 
     fn ex1() -> Vec<String> {
         return (vec![
