@@ -29,11 +29,11 @@ head ${input}
 cat <<EOF > src/day${day}.rs
 use crate::util;
 
-pub fn part1(input: &Vec<i32>) -> i32 {
+pub fn part1(_input: &Vec<String>) -> i32 {
     return 0;
 }
 
-pub fn part2(input: &Vec<i32>) -> i32 {
+pub fn part2(_input: &Vec<String>) -> i32 {
     return 0;
 }
 
@@ -41,36 +41,40 @@ pub fn part2(input: &Vec<i32>) -> i32 {
 mod tests {
     use super::*;
 
-    fn ex1() -> &Vec<i32> {
+    fn ex1() -> Vec<String> {
         return vec![
-        ];
+            "TODO",
+        ]
+        .into_iter()
+        .map(str::to_string)
+        .collect();
     }
 
-    fn real() -> &Vec<i32> {
-        return util::file_as_numbers("${input}");
+    fn real() -> Vec<String> {
+        return util::file_as_strings("./src/day04.txt");
     }
 
     #[test]
     fn test_part1_ex1() {
-        let actual = part1(ex1());
+        let actual = part1(&ex1());
         assert_eq!(actual, 0);
     }
 
     #[test]
     fn test_part1_real() {
-        let actual = part1(real());
+        let actual = part1(&real());
         assert_eq!(actual, 0);
     }
 
     #[test]
     fn test_part2_ex1() {
-        let actual = part2(ex1());
+        let actual = part2(&ex1());
         assert_eq!(actual, 0);
     }
 
     #[test]
     fn test_part2_real() {
-        let actual = part2(real());
+        let actual = part2(&real());
         assert_eq!(actual, 0);
     }
 }
