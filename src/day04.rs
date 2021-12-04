@@ -27,7 +27,7 @@ impl Board {
         'outer: for col_number in 0..5 {
             for row_number in 0..5 {
                 if !self.marked[row_number][col_number] {
-                    break 'outer;
+                    continue 'outer;
                 }
             }
             return true;
@@ -67,6 +67,10 @@ impl Game {
 
     fn find_winner(&self) -> Option<&Board> {
         return self.boards.iter().find(|board| board.is_winner());
+    }
+
+    fn find_winner_index(&self) -> Option<usize> {
+        return self.boards.iter().position(|board| board.is_winner());
     }
 }
 
@@ -124,8 +128,28 @@ pub fn part1(input: &Vec<String>) -> i32 {
     }
 }
 
-pub fn part2(_input: &Vec<String>) -> i32 {
-    return 0;
+pub fn part2(input: &Vec<String>) -> i32 {
+    let mut game = parse_game(input);
+
+    let mut n = game.play();
+    let mut winner = game.find_winner_index();
+
+    loop {
+        match winner {
+            Some(w) => {
+                if game.boards.len() == 1 {
+                    return n * game.boards.first().unwrap().score();
+                } else {
+                    game.boards.remove(w);
+                    winner = None;
+                }
+            }
+            None => {
+                n = game.play();
+                winner = game.find_winner_index();
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -219,7 +243,7 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&ex1());
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 1924);
     }
 
     #[test]
