@@ -37,38 +37,34 @@ pub fn part1(input: &Vec<String>) -> i32 {
     return gamma * epsilon;
 }
 
-// fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
-//     let mut work: Vec<&String> = input;
-//     let mut bit_index = 0;
-//
-//     while work.len() > 1 {
-//         let bit_counts = count_bits(work);
-//         let bit_count = bit_counts[bit_index] as usize;
-//         let half = work.len() / 2;
-//
-//         if bit_count < half {
-//             work = work
-//                 .iter()
-//                 .filter(|bits| bits.as_bytes()[bit_index] == '0' as u8)
-//                 .collect::<Vec<&String>>();
-//         } else {
-//             work = work
-//                 .iter()
-//                 .filter(|bits| bits.as_bytes()[bit_index] == '1' as u8)
-//                 .collect();
-//         }
-//         bit_index += 1;
-//     }
-//
-//     if work.is_empty() {
-//         panic!("Could not find oxygen generator rating");
-//     }
-//
-//     return isize::from_str_radix(&work[0], 2).unwrap() as i32;
-// }
+fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
+    let mut work: Vec<String> = input.clone();
+    let mut bit_index = 0;
 
-pub fn part2(_input: &Vec<String>) -> i32 {
-    return 0;
+    while work.len() > 1 {
+        let bit_counts = count_bits(&work);
+        let bit_count = bit_counts[bit_index] as usize;
+        let half = (work.len() - 1) / 2;
+
+        if bit_count > half {
+            work.retain(|bits| bits.as_bytes()[bit_index] == '1' as u8);
+        } else {
+            work.retain(|bits| bits.as_bytes()[bit_index] == '0' as u8);
+        }
+        bit_index += 1;
+    }
+
+    if work.is_empty() {
+        panic!("Could not find oxygen generator rating");
+    }
+
+    return isize::from_str_radix(&work[0], 2).unwrap() as i32;
+}
+
+pub fn part2(input: &Vec<String>) -> i32 {
+    let ox_rating = oxygen_generator_rating(input);
+
+    return ox_rating;
 }
 
 #[cfg(test)]
