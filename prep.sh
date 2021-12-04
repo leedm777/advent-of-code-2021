@@ -10,6 +10,7 @@ export TZ=America/New_York
 
 year=$(date +%Y)
 day=$(date +%d)
+input=./src/day${day}.txt
 
 if test -e src/day${day}.rs; then
   echo "day${day}.rs already exists" >&2
@@ -18,10 +19,12 @@ fi
 
 set -ex
 curl \
-  --output ./src/day${day}.txt \
+  --output ${input} \
   --fail \
   --cookie .cookies.txt \
   https://adventofcode.com/${year}/day/$((10#${day}))/input
+
+head ${input}
 
 cat <<EOF > src/day${day}.rs
 use crate::util;
@@ -44,7 +47,7 @@ mod tests {
     }
 
     fn real() -> &Vec<i32> {
-        return util::file_as_numbers("./src/day${day}.txt");
+        return util::file_as_numbers("${input}");
     }
 
     #[test]
