@@ -36,13 +36,12 @@ fn main() {
         day02::part2,
     );
 
-    // TODO: FINISH
-    // ex(
-    //     3,
-    //     &util::file_as_strings("./src/day03.txt"),
-    //     day03::part1,
-    //     day03::part2,
-    // );
+    ex(
+        3,
+        &util::file_as_strings("./src/day03.txt"),
+        day03::part1,
+        day03::part2,
+    );
 
     ex(
         4,
