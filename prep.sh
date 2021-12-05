@@ -51,7 +51,7 @@ mod tests {
     }
 
     fn real() -> Vec<String> {
-        return util::file_as_strings("./src/day04.txt");
+        return util::file_as_strings("./src/day${day}.txt");
     }
 
     #[test]
