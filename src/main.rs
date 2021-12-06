@@ -6,10 +6,11 @@ mod day05;
 mod day06;
 mod util;
 
-fn ex<T, F1, F2>(day: i32, input: &T, p1: F1, p2: F2)
+fn ex<T, T2, F1, F2>(day: i32, input: &T, p1: F1, p2: F2)
 where
-    F1: Fn(&T) -> i32,
-    F2: Fn(&T) -> i32,
+    F1: Fn(&T) -> T2,
+    F2: Fn(&T) -> T2,
+    T2: std::fmt::Display,
 {
     let n1 = std::time::Instant::now();
     let r1 = p1(input);
@@ -58,4 +59,11 @@ fn main() {
         day05::part1,
         day05::part2,
     );
+
+    ex(
+        6,
+        &util::file_as_numbers("./src/day06.txt"),
+        day06::part1,
+        day06::part2,
+    )
 }

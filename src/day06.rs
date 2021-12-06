@@ -11,16 +11,15 @@ fn next(fish: &mut Vec<i32>) {
     }
 }
 
-pub fn part1(input: &Vec<i32>) -> i32 {
-    let days = 80;
-    let mut growth = HashMap::<i32, i32>::new();
+fn grow(input: &Vec<i32>, days: i32) -> usize {
+    let mut growth = HashMap::<i32, usize>::new();
 
     for n in 0..=8 {
         let mut fish_n = vec![n];
         for _ in 0..days {
             next(&mut fish_n);
         }
-        growth.insert(n, fish_n.len() as i32);
+        growth.insert(n, fish_n.len());
     }
 
     return input
@@ -29,8 +28,12 @@ pub fn part1(input: &Vec<i32>) -> i32 {
         .sum();
 }
 
-pub fn part2(_input: &Vec<i32>) -> i32 {
-    return 0;
+pub fn part1(input: &Vec<i32>) -> usize {
+    return grow(input, 80);
+}
+
+pub fn part2(input: &Vec<i32>) -> usize {
+    return grow(input, 256);
 }
 
 #[cfg(test)]
@@ -75,7 +78,7 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&ex1());
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 26984457539);
     }
 
     #[test]
