@@ -14,11 +14,16 @@ fn next(fish: &mut Vec<i32>) {
 fn grow(input: &Vec<i32>, days: i32) -> usize {
     let mut growth = HashMap::<i32, usize>::new();
 
-    for n in 0..=8 {
-        let mut fish_n = vec![n];
-        for _ in 0..days {
-            next(&mut fish_n);
-        }
+    let mut fish_n = vec![8];
+    for d in 0..days {
+        // println!("day {}", d);
+        next(&mut fish_n);
+    }
+    growth.insert(8, fish_n.len());
+
+    for n in (0..=7).rev() {
+        // println!("fish {}", n);
+        next(&mut fish_n);
         growth.insert(n, fish_n.len());
     }
 
@@ -84,6 +89,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&real());
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 1617359101538);
     }
 }
