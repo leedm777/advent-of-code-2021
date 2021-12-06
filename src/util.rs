@@ -9,6 +9,7 @@ pub fn file_as_numbers(filename: &str) -> Vec<i32> {
     let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
     return contents
         .lines()
+        .flat_map(|s| s.split(","))
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
 }

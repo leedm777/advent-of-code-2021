@@ -3,6 +3,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 mod util;
 
 fn ex<T, F1, F2>(day: i32, input: &T, p1: F1, p2: F2)
