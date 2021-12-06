@@ -40,29 +40,19 @@ pub fn part1(input: &Vec<String>) -> i32 {
     let mut count = HashMap::new();
     let lines = input.iter().map(parse_line);
     for line in lines {
-        if line.begin.x == line.end.x {
-            let x = line.begin.x;
-            let y1 = std::cmp::min(line.begin.y, line.end.y);
-            let y2 = std::cmp::max(line.begin.y, line.end.y);
+        if line.begin.x == line.end.x || line.begin.y == line.end.y {
+            let x_dir = (line.end.x - line.begin.x).signum();
+            let y_dir = (line.end.y - line.begin.y).signum();
 
-            for y in (y1)..=(y2) {
-                let pos = Pos { x, y };
-                // from https://stackoverflow.com/a/41418147/115478
-                *count.entry(pos).or_insert(0) += 1;
+            let mut pos = line.begin.clone();
+            while pos != line.end {
+                *count.entry(pos.clone()).or_insert(0) += 1;
+                pos.x += x_dir;
+                pos.y += y_dir;
             }
-        } else if line.begin.y == line.end.y {
-            let y = line.begin.y;
-            let x1 = std::cmp::min(line.begin.x, line.end.x);
-            let x2 = std::cmp::max(line.begin.x, line.end.x);
-
-            for x in (x1)..=(x2) {
-                let pos = Pos { x, y };
-                // from https://stackoverflow.com/a/41418147/115478
-                *count.entry(pos).or_insert(0) += 1;
-            }
+            *count.entry(pos.clone()).or_insert(0) += 1;
         }
     }
-
     // for y in 0..10 {
     //     let mut s = String::new();
     //     for x in 0..10 {
@@ -82,50 +72,29 @@ pub fn part2(input: &Vec<String>) -> i32 {
     let mut count = HashMap::new();
     let lines = input.iter().map(parse_line);
     for line in lines {
-        if line.begin.x == line.end.x {
-            let x = line.begin.x;
-            let y1 = std::cmp::min(line.begin.y, line.end.y);
-            let y2 = std::cmp::max(line.begin.y, line.end.y);
+        let x_dir = (line.end.x - line.begin.x).signum();
+        let y_dir = (line.end.y - line.begin.y).signum();
 
-            for y in (y1)..=(y2) {
-                let pos = Pos { x, y };
-                // from https://stackoverflow.com/a/41418147/115478
-                *count.entry(pos).or_insert(0) += 1;
-            }
-        } else if line.begin.y == line.end.y {
-            let y = line.begin.y;
-            let x1 = std::cmp::min(line.begin.x, line.end.x);
-            let x2 = std::cmp::max(line.begin.x, line.end.x);
-
-            for x in (x1)..=(x2) {
-                let pos = Pos { x, y };
-                // from https://stackoverflow.com/a/41418147/115478
-                *count.entry(pos).or_insert(0) += 1;
-            }
-        } else {
-            let x_dir = (line.end.x - line.begin.x).signum();
-            let y_dir = (line.end.y - line.begin.y).signum();
-
-            let mut pos = line.begin.clone();
-            while pos != line.end {
-                *count.entry(pos.clone()).or_insert(0) += 1;
-                pos.x += x_dir;
-                pos.y += y_dir;
-            }
+        let mut pos = line.begin.clone();
+        while pos != line.end {
+            *count.entry(pos.clone()).or_insert(0) += 1;
+            pos.x += x_dir;
+            pos.y += y_dir;
         }
+        *count.entry(pos.clone()).or_insert(0) += 1;
     }
 
-    for y in 0..10 {
-        let mut s = String::new();
-        for x in 0..10 {
-            s = format!(
-                "{}{}",
-                s,
-                count.get(&Pos { x, y }).map(|c| *c).unwrap_or_default()
-            );
-        }
-        println!("{}", s);
-    }
+    // for y in 0..10 {
+    //     let mut s = String::new();
+    //     for x in 0..10 {
+    //         s = format!(
+    //             "{}{}",
+    //             s,
+    //             count.get(&Pos { x, y }).map(|c| *c).unwrap_or_default()
+    //         );
+    //     }
+    //     println!("{}", s);
+    // }
 
     return count.iter().map(|(_, c)| c).filter(|c| **c > 1).count() as i32;
 }
@@ -178,6 +147,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&real());
-        assert_eq!(actual, 0); // 19236 too low
+        assert_eq!(actual, 19258); // 19236 too low
     }
 }
