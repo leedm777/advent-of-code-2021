@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-#[derive(Eq, Hash, PartialEq, Clone)]
+#[derive(Eq, Hash, PartialEq, Clone, Copy)]
 struct Pos {
     x: i32,
     y: i32,
@@ -44,26 +44,15 @@ pub fn part1(input: &Vec<String>) -> i32 {
             let x_dir = (line.end.x - line.begin.x).signum();
             let y_dir = (line.end.y - line.begin.y).signum();
 
-            let mut pos = line.begin.clone();
+            let mut pos = line.begin;
             while pos != line.end {
-                *count.entry(pos.clone()).or_insert(0) += 1;
+                *count.entry(pos).or_insert(0) += 1;
                 pos.x += x_dir;
                 pos.y += y_dir;
             }
-            *count.entry(pos.clone()).or_insert(0) += 1;
+            *count.entry(pos).or_insert(0) += 1;
         }
     }
-    // for y in 0..10 {
-    //     let mut s = String::new();
-    //     for x in 0..10 {
-    //         s = format!(
-    //             "{}{}",
-    //             s,
-    //             count.get(&Pos { x, y }).map(|c| *c).unwrap_or_default()
-    //         );
-    //     }
-    //     println!("{}", s);
-    // }
 
     return count.iter().map(|(_, c)| c).filter(|c| **c > 1).count() as i32;
 }
@@ -75,26 +64,14 @@ pub fn part2(input: &Vec<String>) -> i32 {
         let x_dir = (line.end.x - line.begin.x).signum();
         let y_dir = (line.end.y - line.begin.y).signum();
 
-        let mut pos = line.begin.clone();
+        let mut pos = line.begin;
         while pos != line.end {
-            *count.entry(pos.clone()).or_insert(0) += 1;
+            *count.entry(pos).or_insert(0) += 1;
             pos.x += x_dir;
             pos.y += y_dir;
         }
-        *count.entry(pos.clone()).or_insert(0) += 1;
+        *count.entry(pos).or_insert(0) += 1;
     }
-
-    // for y in 0..10 {
-    //     let mut s = String::new();
-    //     for x in 0..10 {
-    //         s = format!(
-    //             "{}{}",
-    //             s,
-    //             count.get(&Pos { x, y }).map(|c| *c).unwrap_or_default()
-    //         );
-    //     }
-    //     println!("{}", s);
-    // }
 
     return count.iter().map(|(_, c)| c).filter(|c| **c > 1).count() as i32;
 }
