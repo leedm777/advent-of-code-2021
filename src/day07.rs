@@ -13,8 +13,23 @@ pub fn part1(input: &Vec<i32>) -> i32 {
     return min_cost;
 }
 
-pub fn part2(_input: &Vec<i32>) -> i32 {
-    return 0;
+pub fn part2(input: &Vec<i32>) -> i32 {
+    let min_depth = *input.iter().min().expect("Could not find min");
+    let max_depth = *input.iter().max().expect("Could not find max");
+
+    let mut min_cost = i32::MAX;
+
+    for depth in min_depth..=max_depth {
+        let cost = input
+            .iter()
+            .map(|d| (d - depth).abs())
+            .map(|d| d * (d + 1) / 2)
+            .sum();
+        if cost < min_cost {
+            min_cost = cost;
+        }
+    }
+    return min_cost;
 }
 
 #[cfg(test)]
@@ -45,12 +60,12 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&ex1());
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 168);
     }
 
     #[test]
     fn test_part2_real() {
         let actual = part2(&real());
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 98363777);
     }
 }

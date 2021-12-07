@@ -66,5 +66,12 @@ fn main() {
         &util::file_as_numbers("./src/day06.txt"),
         day06::part1,
         day06::part2,
-    )
+    );
+
+    ex(
+        7,
+        &util::file_as_numbers("./src/day07.txt"),
+        day07::part1,
+        day07::part2,
+    );
 }
