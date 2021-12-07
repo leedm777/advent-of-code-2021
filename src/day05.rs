@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy)]
-struct Pos {
+pub struct Pos {
     x: i32,
     y: i32,
 }
@@ -12,7 +12,7 @@ impl std::fmt::Display for Pos {
     }
 }
 
-struct Line {
+pub struct Line {
     begin: Pos,
     end: Pos,
 }
@@ -29,17 +29,20 @@ fn parse_pos(s: &str) -> Pos {
     let y = y.parse().expect("Could not parse y");
     return Pos { x, y };
 }
-fn parse_line(line: &String) -> Line {
+fn parse_line(line: &str) -> Line {
     let (begin, end) = line.split_once(" -> ").expect("Could not find -> in line");
     let begin = parse_pos(begin);
     let end = parse_pos(end);
     return Line { begin, end };
 }
 
-pub fn part1(input: &Vec<String>) -> i32 {
+pub fn parse(input: &str) -> Vec<Line> {
+    return input.lines().map(parse_line).collect();
+}
+
+pub fn part1(input: &Vec<Line>) -> i32 {
     let mut count = HashMap::new();
-    let lines = input.iter().map(parse_line);
-    for line in lines {
+    for line in input {
         if line.begin.x == line.end.x || line.begin.y == line.end.y {
             let x_dir = (line.end.x - line.begin.x).signum();
             let y_dir = (line.end.y - line.begin.y).signum();
@@ -57,10 +60,9 @@ pub fn part1(input: &Vec<String>) -> i32 {
     return count.iter().map(|(_, c)| c).filter(|c| **c > 1).count() as i32;
 }
 
-pub fn part2(input: &Vec<String>) -> i32 {
+pub fn part2(input: &Vec<Line>) -> i32 {
     let mut count = HashMap::new();
-    let lines = input.iter().map(parse_line);
-    for line in lines {
+    for line in input {
         let x_dir = (line.end.x - line.begin.x).signum();
         let y_dir = (line.end.y - line.begin.y).signum();
 
@@ -81,7 +83,7 @@ mod tests {
     use super::*;
     use crate::util;
 
-    fn ex1() -> Vec<String> {
+    fn ex1() -> Vec<Line> {
         return vec![
             "0,9 -> 5,9",
             "8,0 -> 0,8",
@@ -94,13 +96,13 @@ mod tests {
             "0,0 -> 8,8",
             "5,5 -> 8,2",
         ]
-        .into_iter()
-        .map(str::to_string)
+        .iter()
+        .map(|&s| parse_line(s))
         .collect();
     }
 
-    fn real() -> Vec<String> {
-        return util::file_as_strings("./src/day05.txt");
+    fn real() -> Vec<Line> {
+        return util::read_input(5).lines().map(parse_line).collect();
     }
 
     #[test]

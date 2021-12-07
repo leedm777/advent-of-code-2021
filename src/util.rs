@@ -5,10 +5,6 @@ pub fn read_input(day: i32) -> String {
     return fs::read_to_string(filename).expect("Something went wrong reading the file");
 }
 
-pub fn as_lines(input: &str) -> std::str::Lines {
-    return input.lines();
-}
-
 pub fn as_ints(input: &str) -> Vec<i32> {
     return input
         .trim()
