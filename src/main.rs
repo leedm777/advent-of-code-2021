@@ -25,6 +25,32 @@ where
     println!("       \tpart 2: {} ({:.3} ms)", r2, t2);
 }
 
+fn ex2<IN, OUT, FP, F1, F2>(day: i32, parse: FP, p1: F1, p2: F2)
+where
+    OUT: std::fmt::Display,
+    FP: Fn(&str) -> IN,
+    F1: Fn(&IN) -> OUT,
+    F2: Fn(&IN) -> OUT,
+{
+    let input = util::read_input(day);
+    let n0 = std::time::Instant::now();
+    let input = parse(&input);
+
+    let n1 = std::time::Instant::now();
+    let r1 = p1(&input);
+    let t1 = n1.elapsed().as_secs_f64() * 1000.;
+
+    let n2 = std::time::Instant::now();
+    let r2 = p2(&input);
+    let t2 = n2.elapsed().as_secs_f64() * 1000.;
+
+    let t_total = n0.elapsed().as_secs_f64() * 1000.;
+
+    println!("Day {},\tpart 1: {} ({:.3} ms)", day, r1, t1);
+    println!("       \tpart 2: {} ({:.3} ms)", r2, t2);
+    println!("       \ttotal: {:.3} ms", t_total);
+}
+
 fn main() {
     ex(
         1,
@@ -68,10 +94,12 @@ fn main() {
         day06::part2,
     );
 
-    ex(
-        7,
-        &util::file_as_numbers("./src/day07.txt"),
-        day07::part1,
-        day07::part2,
-    );
+    // ex(
+    //     7,
+    //     &util::file_as_numbers("./src/day07.txt"),
+    //     day07::part1,
+    //     day07::part2,
+    // );
+
+    ex2(7, day07::parse, day07::part1, day07::part2)
 }

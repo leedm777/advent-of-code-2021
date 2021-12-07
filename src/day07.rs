@@ -1,11 +1,19 @@
-pub fn part1(input: &Vec<i32>) -> i32 {
+pub struct CrabDepths(i32, i32, Vec<i32>);
+
+pub fn parse(input: &str) -> CrabDepths {
+    let input: Vec<i32> = crate::util::as_ints(input);
+
     let min_depth = *input.iter().min().expect("Could not find min");
     let max_depth = *input.iter().max().expect("Could not find max");
 
+    return CrabDepths(min_depth, max_depth, input);
+}
+
+pub fn part1(CrabDepths(min_depth, max_depth, crab_depths): &CrabDepths) -> i32 {
     let mut min_cost = i32::MAX;
 
-    for depth in min_depth..=max_depth {
-        let cost = input.iter().map(|d| (d - depth).abs()).sum();
+    for depth in *min_depth..=*max_depth {
+        let cost = crab_depths.iter().map(|d| (d - depth).abs()).sum();
         if cost < min_cost {
             min_cost = cost;
         }
@@ -13,14 +21,11 @@ pub fn part1(input: &Vec<i32>) -> i32 {
     return min_cost;
 }
 
-pub fn part2(input: &Vec<i32>) -> i32 {
-    let min_depth = *input.iter().min().expect("Could not find min");
-    let max_depth = *input.iter().max().expect("Could not find max");
-
+pub fn part2(CrabDepths(min_depth, max_depth, crab_depths): &CrabDepths) -> i32 {
     let mut min_cost = i32::MAX;
 
-    for depth in min_depth..=max_depth {
-        let cost = input
+    for depth in *min_depth..=*max_depth {
+        let cost = crab_depths
             .iter()
             .map(|d| (d - depth).abs())
             .map(|d| d * (d + 1) / 2)
@@ -37,12 +42,12 @@ mod tests {
     use super::*;
     use crate::util;
 
-    fn ex1() -> Vec<i32> {
-        return vec![16, 1, 2, 0, 4, 2, 7, 1, 2, 14];
+    fn ex1() -> CrabDepths {
+        return parse("16,1,2,0,4,2,7,1,2,14");
     }
 
-    fn real() -> Vec<i32> {
-        return util::file_as_numbers("./src/day07.txt");
+    fn real() -> CrabDepths {
+        return parse(&util::read_input(7));
     }
 
     #[test]
