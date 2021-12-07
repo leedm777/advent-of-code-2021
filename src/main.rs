@@ -87,19 +87,7 @@ fn main() {
         day05::part2,
     );
 
-    ex(
-        6,
-        &util::file_as_numbers("./src/day06.txt"),
-        day06::part1,
-        day06::part2,
-    );
-
-    // ex(
-    //     7,
-    //     &util::file_as_numbers("./src/day07.txt"),
-    //     day07::part1,
-    //     day07::part2,
-    // );
+    ex2(6, day06::parse, day06::part1, day06::part2);
 
     ex2(7, day07::parse, day07::part1, day07::part2)
 }

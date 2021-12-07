@@ -1,5 +1,9 @@
 use std::collections::HashMap;
 
+pub fn parse(input: &str) -> Vec<i32> {
+    return crate::util::as_ints(input);
+}
+
 fn next(fish_counts: &HashMap<i32, usize>) -> HashMap<i32, usize> {
     let mut r = HashMap::<i32, usize>::new();
 
