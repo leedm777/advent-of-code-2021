@@ -1,36 +1,33 @@
 use std::collections::HashMap;
 
-fn next(fish: &mut Vec<i32>) {
-    for idx in 0..fish.len() {
-        if fish[idx] == 0 {
-            fish[idx] = 6;
-            fish.push(8);
+fn next(fish_counts: &HashMap<i32, usize>) -> HashMap<i32, usize> {
+    let mut r = HashMap::<i32, usize>::new();
+
+    for (&n, &c) in fish_counts.iter() {
+        if n == 0 {
+            r.insert(8, c);
+            *r.entry(6).or_insert(0) += c;
+        } else if n == 7 {
+            *r.entry(6).or_insert(0) += c;
         } else {
-            fish[idx] -= 1;
+            r.insert(n - 1, c);
         }
     }
+
+    return r;
 }
 
 fn grow(input: &Vec<i32>, days: i32) -> usize {
-    let mut growth = HashMap::<i32, usize>::new();
-
-    let mut fish_n = vec![8];
-    for d in 0..days {
-        // println!("day {}", d);
-        next(&mut fish_n);
-    }
-    growth.insert(8, fish_n.len());
-
-    for n in (0..=7).rev() {
-        // println!("fish {}", n);
-        next(&mut fish_n);
-        growth.insert(n, fish_n.len());
+    let mut fish_counts = HashMap::<i32, usize>::new();
+    for fish in input {
+        *fish_counts.entry(*fish).or_insert(0) += 1;
     }
 
-    return input
-        .iter()
-        .map(|n| growth.get(n).expect(&format!("No growth for {}", n)))
-        .sum();
+    for _ in 0..days {
+        fish_counts = next(&fish_counts);
+    }
+
+    return fish_counts.values().sum();
 }
 
 pub fn part1(input: &Vec<i32>) -> usize {
@@ -52,20 +49,6 @@ mod tests {
 
     fn real() -> Vec<i32> {
         return util::file_as_numbers("./src/day06.txt");
-    }
-
-    #[test]
-    fn test_next_1() {
-        let mut fish = vec![3, 4, 3, 1, 2];
-        next(&mut fish);
-        assert_eq!(fish, vec![2, 3, 2, 0, 1]);
-    }
-
-    #[test]
-    fn test_next_2() {
-        let mut fish = vec![2, 3, 2, 0, 1];
-        next(&mut fish);
-        assert_eq!(fish, vec![1, 2, 1, 6, 0, 8]);
     }
 
     #[test]
