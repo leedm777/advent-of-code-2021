@@ -78,5 +78,6 @@ fn main() {
     ex2(4, day04::parse, day04::part1, day04::part2);
     ex2(5, day05::parse, day05::part1, day05::part2);
     ex2(6, day06::parse, day06::part1, day06::part2);
-    ex2(7, day07::parse, day07::part1, day07::part2)
+    ex2(7, day07::parse, day07::part1, day07::part2);
+    ex2(8, day08::parse, day08::part1, day08::part2);
 }
