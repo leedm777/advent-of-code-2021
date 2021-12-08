@@ -17,6 +17,10 @@ fn count_bits(input: &Vec<String>) -> Vec<i32> {
     counts
 }
 
+pub fn parse(input: &str) -> Vec<String> {
+    return input.lines().map(str::to_string).collect();
+}
+
 pub fn part1(input: &Vec<String>) -> i32 {
     let len = input.len();
     let counts = count_bits(input);
@@ -36,7 +40,7 @@ pub fn part1(input: &Vec<String>) -> i32 {
 }
 
 fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
-    let mut work: Vec<String> = input.clone();
+    let mut work = input.clone();
     let mut bit_index = 0;
 
     while work.len() > 1 {
@@ -60,7 +64,7 @@ fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
 }
 
 fn co2_scrubber_rating(input: &Vec<String>) -> i32 {
-    let mut work: Vec<String> = input.clone();
+    let mut work = input.clone();
     let mut bit_index = 0;
 
     while work.len() > 1 {
@@ -95,47 +99,45 @@ mod tests {
     use super::*;
     use crate::util;
 
-    fn ex1() -> Vec<String> {
-        return vec![
+    fn ex1() -> String {
+        return [
             "00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000",
             "11001", "00010", "01010",
         ]
-        .into_iter()
-        .map(str::to_string)
-        .collect();
+        .join("\n");
     }
 
-    fn real() -> Vec<String> {
-        return util::file_as_strings("./src/day03.txt");
+    fn real() -> String {
+        return util::read_input(3);
     }
 
     #[test]
     fn test_count_bits() {
-        let actual = count_bits(&ex1());
+        let actual = count_bits(&parse(&ex1()));
         assert_eq!(actual, vec![7, 5, 8, 7, 5]);
     }
 
     #[test]
     fn test_part1_ex1() {
-        let actual = part1(&ex1());
+        let actual = part1(&parse(&ex1()));
         assert_eq!(actual, 198);
     }
 
     #[test]
     fn test_part1_real() {
-        let actual = part1(&real());
+        let actual = part1(&parse(&real()));
         assert_eq!(actual, 3148794);
     }
 
     #[test]
     fn test_part2_ex1() {
-        let actual = part2(&ex1());
+        let actual = part2(&parse(&ex1()));
         assert_eq!(actual, 230);
     }
 
     #[test]
     fn test_part2_real() {
-        let actual = part2(&real());
+        let actual = part2(&parse(&real()));
         assert_eq!(actual, 2795310);
     }
 }

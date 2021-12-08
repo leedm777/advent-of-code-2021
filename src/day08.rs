@@ -57,6 +57,12 @@ pub fn part1(input: &Vec<Entry>) -> i32 {
  *  f: 9 - unique
  */
 
+fn encode(s: &str) -> i32 {
+    s.chars()
+        .map(|ch| ch as i32 - 'a' as i32)
+        .fold(0, |a, b| a | (1 << b))
+}
+
 fn solve(entry: &Entry) -> i32 {
     let one = entry
         .patterns
@@ -108,11 +114,6 @@ fn solve(entry: &Entry) -> i32 {
         .find(|ch| ![a, b, c, d, e, f].contains(ch))
         .expect("Could not find g");
 
-    fn encode(s: &str) -> i32 {
-        s.chars()
-            .map(|ch| ch as i32 - 'a' as i32)
-            .fold(0, |a, b| a | (1 << b))
-    }
     let zero = encode(&[a, b, c, e, f, g].iter().collect::<String>());
     let one = encode(one);
     let two = encode(&[a, c, d, e, g].iter().collect::<String>());
