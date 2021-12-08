@@ -49,6 +49,7 @@ where
     println!("Day {},\tpart 1: {} ({:.3} ms)", day, r1, t1);
     println!("       \tpart 2: {} ({:.3} ms)", r2, t2);
     println!("       \ttotal: {:.3} ms", t_total);
+    println!();
 }
 
 fn main() {
@@ -73,16 +74,8 @@ fn main() {
         day03::part2,
     );
 
-    ex(
-        4,
-        &util::file_as_strings("./src/day04.txt"),
-        day04::part1,
-        day04::part2,
-    );
-
+    ex2(4, day04::parse, day04::part1, day04::part2);
     ex2(5, day05::parse, day05::part1, day05::part2);
-
     ex2(6, day06::parse, day06::part1, day06::part2);
-
     ex2(7, day07::parse, day07::part1, day07::part2)
 }

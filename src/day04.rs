@@ -49,7 +49,8 @@ impl Board {
     }
 }
 
-struct Game {
+#[derive(Clone)]
+pub struct Game {
     moves: Vec<i32>,
     boards: Vec<Board>,
 }
@@ -68,7 +69,7 @@ impl Game {
     }
 }
 
-fn parse_board(input: &[String]) -> Board {
+fn parse_board(input: &[&str]) -> Board {
     let mut r = Board {
         grid: [[0; 5]; 5],
         marked: [[false; 5]; 5],
@@ -85,7 +86,7 @@ fn parse_board(input: &[String]) -> Board {
     return r;
 }
 
-fn parse_game(input: &Vec<String>) -> Game {
+fn parse_game(input: &Vec<&str>) -> Game {
     let mut splits = input.split(|line| line.is_empty());
     let mut moves: Vec<i32> = splits
         .next()
@@ -103,8 +104,13 @@ fn parse_game(input: &Vec<String>) -> Game {
     };
 }
 
-pub fn part1(input: &Vec<String>) -> i32 {
-    let mut game = parse_game(input);
+pub fn parse(input: &str) -> Game {
+    let lines: Vec<&str> = input.lines().collect();
+    return parse_game(&lines);
+}
+
+pub fn part1(game: &Game) -> i32 {
+    let mut game = game.clone();
 
     let mut n = game.play();
     let mut winner = game.find_winner();
@@ -122,8 +128,8 @@ pub fn part1(input: &Vec<String>) -> i32 {
     }
 }
 
-pub fn part2(input: &Vec<String>) -> i32 {
-    let mut game = parse_game(input);
+pub fn part2(game: &Game) -> i32 {
+    let mut game = game.clone();
 
     let mut n = game.play();
     let mut winner = game.find_winner();
@@ -151,8 +157,8 @@ mod tests {
     use super::*;
     use crate::util;
 
-    fn ex0() -> Vec<String> {
-        return vec![
+    fn ex0() -> String {
+        return [
             "7,4,9,5",
             "",
             "22 13 17 11  0",
@@ -161,13 +167,11 @@ mod tests {
             " 6 10  3 18  5",
             " 1 12 20 15 19",
         ]
-        .into_iter()
-        .map(str::to_string)
-        .collect();
+        .join("\n");
     }
 
-    fn ex1() -> Vec<String> {
-        return vec![
+    fn ex1() -> Game {
+        return parse_game(&vec![
             "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1",
             "",
             "22 13 17 11  0",
@@ -187,19 +191,16 @@ mod tests {
             "18  8 23 26 20",
             "22 11 13  6  5",
             " 2  0 12  3  7",
-        ]
-        .into_iter()
-        .map(str::to_string)
-        .collect();
+        ]);
     }
 
-    fn real() -> Vec<String> {
-        return util::file_as_strings("./src/day04.txt");
+    fn real() -> Game {
+        return parse(&util::read_input(4));
     }
 
     #[test]
     fn test_parse_game() {
-        let actual = parse_game(&ex0());
+        let actual = parse(&ex0());
         let expected = Game {
             moves: vec![5, 9, 4, 7], //[7, 4, 9, 5],
             boards: vec![Board {
