@@ -1,22 +1,24 @@
 use std::collections::HashMap;
 
 pub struct OceanFloor {
-    heights: HashMap<(i32, i32), i32>,
-    max_x: i32,
-    max_y: i32,
+    heights: Vec<Vec<i32>>,
+    max_x: usize,
+    max_y: usize,
 }
 
 pub fn parse(input: &str) -> OceanFloor {
-    let mut heights = HashMap::new();
-    let mut y = 0;
-    let mut max_x = 0;
+    let mut heights = vec![];
+    let mut y: usize = 0;
+    let mut max_x: usize = 0;
     for line in input.lines() {
         let mut x = 0;
+        let mut row = vec![0; line.len()];
         for ch in line.chars() {
             let height = ch as i32 - '0' as i32;
-            heights.insert((x, y), height);
+            row[x] = height;
             x += 1;
         }
+        heights.push(row);
         max_x = x;
         y += 1;
     }
@@ -28,11 +30,19 @@ pub fn parse(input: &str) -> OceanFloor {
 }
 
 pub fn part1(floor: &OceanFloor) -> i32 {
-    let get = |x: i32, y: i32| floor.heights.get(&(x, y)).unwrap_or(&i32::MAX);
+    let get = |x: i32, y: i32| {
+        if x < 0 || y < 0 || x >= floor.heights[0].len() as i32 || y >= floor.heights.len() as i32 {
+            return &i32::MAX;
+        }
+        return &floor.heights[y as usize][x as usize];
+    };
 
     let mut risk = 0;
     for x in 0..floor.max_x {
         for y in 0..floor.max_y {
+            let x = x as i32;
+            let y = y as i32;
+
             let n = get(x, y);
             let north = get(x, y - 1);
             let south = get(x, y + 1);
@@ -47,8 +57,16 @@ pub fn part1(floor: &OceanFloor) -> i32 {
     return risk;
 }
 
-pub fn part2(_input: &OceanFloor) -> i32 {
-    return 0;
+pub fn part2(input: &OceanFloor) -> i32 {
+    // let mut basins = vec![vec![i32::MIN; input.max_x as usize]; input.max_y as usize];
+    // let mut next_basic = 1;
+    //
+    // for x in 0..floor.max_x {
+    //     for y in 0..floor.max_y {
+    //
+    //     }
+    // }
+    0
 }
 
 #[cfg(test)]
@@ -80,13 +98,13 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 423);
     }
 
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&parse(&ex1()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 1134);
     }
 
     #[test]
