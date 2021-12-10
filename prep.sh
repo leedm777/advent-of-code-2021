@@ -27,13 +27,16 @@ curl \
 head ${input}
 
 cat <<EOF > src/day${day}.rs
-
-pub fn part1(_input: &Vec<String>) -> i32 {
-    return 0;
+pub fn parse(input: &str) -> Vec<&str> {
+    input.lines().collect()
 }
 
-pub fn part2(_input: &Vec<String>) -> i32 {
-    return 0;
+pub fn part1(_input: &Vec<&str>) -> i32 {
+    0
+}
+
+pub fn part2(_input: &Vec<&str>) -> i32 {
+    0
 }
 
 #[cfg(test)]
@@ -41,40 +44,38 @@ mod tests {
     use super::*;
     use crate::util;
 
-    fn ex1() -> Vec<String> {
-        return vec![
+    fn ex1() -> String {
+        vec![
             "TODO",
         ]
-        .into_iter()
-        .map(str::to_string)
-        .collect();
+        .join("\n")
     }
 
-    fn real() -> Vec<String> {
-        return util::file_as_strings("./src/day${day}.txt");
+    fn real() -> String {
+       util::read_input($((10#${day})))
     }
 
     #[test]
     fn test_part1_ex1() {
-        let actual = part1(&ex1());
+        let actual = part1(&parse(&ex1()));
         assert_eq!(actual, 0);
     }
 
     #[test]
     fn test_part1_real() {
-        let actual = part1(&real());
+        let actual = part1(&parse(&real()));
         assert_eq!(actual, 0);
     }
 
     #[test]
     fn test_part2_ex1() {
-        let actual = part2(&ex1());
+        let actual = part2(&parse(&ex1()));
         assert_eq!(actual, 0);
     }
 
     #[test]
     fn test_part2_real() {
-        let actual = part2(&real());
+        let actual = part2(&parse(&real()));
         assert_eq!(actual, 0);
     }
 }
