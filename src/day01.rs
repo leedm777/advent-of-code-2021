@@ -1,3 +1,7 @@
+pub fn parse(input: &str) -> Vec<i32> {
+    crate::util::as_ints(input)
+}
+
 pub fn part1(input: &Vec<i32>) -> i32 {
     // improvement inspired by https://github.com/jeremylt/advent2021/blob/main/src/day01.rs
     return input.windows(2).map(|p| (p[0] < p[1]) as i32).sum();
@@ -23,7 +27,7 @@ mod tests {
     }
 
     fn real() -> Vec<i32> {
-        return util::file_as_numbers("./src/day01.txt");
+        return parse(&util::read_input(1));
     }
 
     #[test]

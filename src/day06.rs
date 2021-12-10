@@ -52,7 +52,7 @@ mod tests {
     }
 
     fn real() -> Vec<i32> {
-        return util::file_as_numbers("./src/day06.txt");
+        return parse(&util::read_input(6));
     }
 
     #[test]

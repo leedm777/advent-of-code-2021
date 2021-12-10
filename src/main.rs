@@ -10,24 +10,6 @@ mod day09;
 mod day10;
 mod util;
 
-fn ex<T, T2, F1, F2>(day: i32, input: &T, p1: F1, p2: F2)
-where
-    F1: Fn(&T) -> T2,
-    F2: Fn(&T) -> T2,
-    T2: std::fmt::Display,
-{
-    let n1 = std::time::Instant::now();
-    let r1 = p1(input);
-    let t1 = n1.elapsed().as_secs_f64() * 1000.;
-
-    let n2 = std::time::Instant::now();
-    let r2 = p2(input);
-    let t2 = n2.elapsed().as_secs_f64() * 1000.;
-
-    println!("Day {},\tpart 1: {} ({:.3} ms)", day, r1, t1);
-    println!("       \tpart 2: {} ({:.3} ms)", r2, t2);
-}
-
 fn ex2<IN, OUT, FP, F1, F2>(day: i32, parse: FP, p1: F1, p2: F2)
 where
     OUT: std::fmt::Display,
@@ -56,13 +38,7 @@ where
 }
 
 fn main() {
-    ex(
-        1,
-        &util::file_as_numbers("./src/day01.txt"),
-        day01::part1,
-        day01::part2,
-    );
-
+    ex2(1, day01::parse, day01::part1, day01::part2);
     ex2(2, day02::parse, day02::part1, day02::part2);
     ex2(3, day03::parse, day03::part1, day03::part2);
     ex2(4, day04::parse, day04::part1, day04::part2);
