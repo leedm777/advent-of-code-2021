@@ -1,8 +1,8 @@
-pub fn parse(input: &str) -> Vec<&str> {
-    input.lines().collect()
+pub fn parse(input: &str) -> Vec<String> {
+    input.lines().map(str::to_string).collect()
 }
 
-pub fn part1(lines: &Vec<&str>) -> i64 {
+pub fn part1(lines: &Vec<String>) -> i64 {
     let mut score = 0;
     for line in lines {
         let mut expected = vec![];
@@ -29,10 +29,10 @@ pub fn part1(lines: &Vec<&str>) -> i64 {
     score
 }
 
-pub fn part2(lines: &Vec<&str>) -> i64 {
+pub fn part2(lines: &Vec<String>) -> i64 {
     let mut scores: Vec<i64> = lines
         .iter()
-        .map(|line: &&str| {
+        .map(|line: &String| {
             let mut expected = vec![];
             for ch in line.chars() {
                 match ch {
