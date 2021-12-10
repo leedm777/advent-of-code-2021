@@ -1,3 +1,7 @@
+pub fn parse(input: &str) -> Vec<String> {
+    input.lines().map(str::to_string).collect()
+}
+
 pub fn part1(input: &Vec<String>) -> i32 {
     let (x, y) = input
         .iter()
@@ -44,21 +48,21 @@ mod tests {
     use crate::util;
 
     fn ex1() -> Vec<String> {
-        return (vec![
+        return vec![
             "forward 5",
             "down 5",
             "forward 8",
             "up 3",
             "down 8",
             "forward 2",
-        ])
-        .into_iter()
-        .map(str::to_string)
+        ]
+        .iter()
+        .map(|s| s.to_string())
         .collect();
     }
 
     fn real() -> Vec<String> {
-        return util::file_as_strings("./src/day02.txt");
+        return parse(&util::read_input(2));
     }
 
     #[test]
