@@ -55,6 +55,30 @@ pub fn part1(floor: &OceanFloor) -> i32 {
     return risk;
 }
 
+fn merge_basins(
+    floor: &OceanFloor,
+    basins: &mut Vec<Vec<usize>>,
+    old_basin: usize,
+    new_basin: usize,
+    x: usize,
+    y: usize,
+) {
+    if basins[y][x] == old_basin {
+        basins[y][x] = new_basin;
+        if x > 0 {
+            merge_basins(floor, basins, old_basin, new_basin, x - 1, y);
+        }
+        if x < floor.max_x - 1 {
+            merge_basins(floor, basins, old_basin, new_basin, x + 1, y);
+        }
+        if y > 0 {
+            merge_basins(floor, basins, old_basin, new_basin, x, y - 1);
+        }
+        if y < floor.max_y - 1 {
+            merge_basins(floor, basins, old_basin, new_basin, x, y + 1);
+        }
+    }
+}
 pub fn part2(floor: &OceanFloor) -> i32 {
     let mut basins = vec![vec![0; floor.max_x]; floor.max_y];
     let mut next_basin: usize = 1;
@@ -82,13 +106,7 @@ pub fn part2(floor: &OceanFloor) -> i32 {
             } else {
                 // join two basins
                 basins[y][x] = north_basin;
-                for y in 0..=y {
-                    for x in 0..floor.max_x {
-                        if basins[y][x] == west_basin {
-                            basins[y][x] = north_basin;
-                        }
-                    }
-                }
+                merge_basins(floor, &mut basins, west_basin, north_basin, x - 1, y);
             }
         }
     }
@@ -105,11 +123,11 @@ pub fn part2(floor: &OceanFloor) -> i32 {
     }
     basin_sizes[0] = 0;
     basin_sizes.sort();
-    basin_sizes.reverse();
+    let n = basin_sizes.len();
     // for f in &basin_sizes {
     //     println!("{}", f);
     // }
-    basin_sizes[0] * basin_sizes[1] * basin_sizes[2]
+    basin_sizes[n - 1] * basin_sizes[n - 2] * basin_sizes[n - 3]
 }
 
 #[cfg(test)]
