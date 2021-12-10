@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 pub struct OceanFloor {
     heights: Vec<Vec<i32>>,
     max_x: usize,
@@ -31,7 +29,7 @@ pub fn parse(input: &str) -> OceanFloor {
 
 pub fn part1(floor: &OceanFloor) -> i32 {
     let get = |x: i32, y: i32| {
-        if x < 0 || y < 0 || x >= floor.heights[0].len() as i32 || y >= floor.heights.len() as i32 {
+        if x < 0 || y < 0 || x >= floor.max_x as i32 || y >= floor.max_y as i32 {
             return &i32::MAX;
         }
         return &floor.heights[y as usize][x as usize];
@@ -57,16 +55,61 @@ pub fn part1(floor: &OceanFloor) -> i32 {
     return risk;
 }
 
-pub fn part2(input: &OceanFloor) -> i32 {
-    // let mut basins = vec![vec![i32::MIN; input.max_x as usize]; input.max_y as usize];
-    // let mut next_basic = 1;
-    //
-    // for x in 0..floor.max_x {
-    //     for y in 0..floor.max_y {
-    //
-    //     }
+pub fn part2(floor: &OceanFloor) -> i32 {
+    let mut basins = vec![vec![0; floor.max_x]; floor.max_y];
+    let mut next_basin: usize = 1;
+
+    for y in 0..floor.max_y {
+        for x in 0..floor.max_x {
+            let height = floor.heights[y][x];
+            if height == 9 {
+                basins[y][x] = 0;
+                continue;
+            }
+
+            let west_basin = if x == 0 { 0 } else { basins[y][x - 1] };
+            let north_basin = if y == 0 { 0 } else { basins[y - 1][x] };
+
+            if west_basin == 0 && north_basin == 0 {
+                basins[y][x] = next_basin;
+                next_basin += 1;
+            } else if west_basin == north_basin {
+                basins[y][x] = west_basin;
+            } else if west_basin == 0 {
+                basins[y][x] = north_basin;
+            } else if north_basin == 0 {
+                basins[y][x] = west_basin;
+            } else {
+                // join two basins
+                basins[y][x] = north_basin;
+                for y in 0..=y {
+                    for x in 0..floor.max_x {
+                        if basins[y][x] == west_basin {
+                            basins[y][x] = north_basin;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let mut basin_sizes = vec![0; next_basin];
+
+    for y in 0..floor.max_y {
+        for x in 0..floor.max_x {
+            // print!("{}", basins[y][x]);
+            let basin = basins[y][x];
+            basin_sizes[basin] += 1;
+        }
+        // println!();
+    }
+    basin_sizes[0] = 0;
+    basin_sizes.sort();
+    basin_sizes.reverse();
+    // for f in &basin_sizes {
+    //     println!("{}", f);
     // }
-    0
+    basin_sizes[0] * basin_sizes[1] * basin_sizes[2]
 }
 
 #[cfg(test)]
@@ -110,6 +153,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 1198704);
     }
 }
