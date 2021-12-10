@@ -38,6 +38,19 @@ pub fn parse(input: &str) -> Vec<Line> {
     return input.lines().map(parse_line).collect();
 }
 
+fn score_count(count: &Vec<Vec<i32>>) -> i32 {
+    count.iter().flat_map(|v| v).fold(
+        0,
+        |sum, &num_overlaps| {
+            if num_overlaps > 1 {
+                sum + 1
+            } else {
+                sum
+            }
+        },
+    )
+}
+
 pub fn part1(input: &Vec<Line>) -> i32 {
     let mut count = vec![vec![0; 1000]; 1000];
     for line in input {
@@ -55,17 +68,7 @@ pub fn part1(input: &Vec<Line>) -> i32 {
         }
     }
 
-    // count.iter().filter(|c| **c > 1).count() as i32
-    count.iter().flat_map(|v| v).fold(
-        0,
-        |sum, &num_overlaps| {
-            if num_overlaps > 1 {
-                sum + 1
-            } else {
-                sum
-            }
-        },
-    )
+    score_count(&count)
 }
 
 pub fn part2(input: &Vec<Line>) -> i32 {
@@ -95,16 +98,7 @@ pub fn part2(input: &Vec<Line>) -> i32 {
     //     println!();
     // }
 
-    count.iter().flat_map(|v| v).fold(
-        0,
-        |sum, &num_overlaps| {
-            if num_overlaps > 1 {
-                sum + 1
-            } else {
-                sum
-            }
-        },
-    )
+    score_count(&count)
 }
 
 #[cfg(test)]
