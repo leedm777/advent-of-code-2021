@@ -39,7 +39,7 @@ pub fn parse(input: &str) -> Vec<Line> {
 }
 
 pub fn part1(input: &Vec<Line>) -> i32 {
-    let mut count = vec![vec![0; 1000]; 1000];
+    let mut count = [0; 1000 * 1000];
     for line in input {
         if line.begin.x == line.end.x || line.begin.y == line.end.y {
             let x_dir = (line.end.x - line.begin.x).signum();
@@ -47,30 +47,40 @@ pub fn part1(input: &Vec<Line>) -> i32 {
 
             let mut pos = line.begin;
             while pos != line.end {
-                count[pos.x as usize][pos.y as usize] += 1;
+                count[(pos.x * 1000 + pos.y) as usize] += 1;
                 pos.x += x_dir;
                 pos.y += y_dir;
             }
-            count[pos.x as usize][pos.y as usize] += 1;
+            count[(pos.x * 1000 + pos.y) as usize] += 1;
         }
     }
 
-    count.iter().flat_map(|v| v).filter(|c| **c > 1).count() as i32
+    // count.iter().filter(|c| **c > 1).count() as i32
+    count.iter().fold(
+        0,
+        |sum, &num_overlaps| {
+            if num_overlaps > 1 {
+                sum + 1
+            } else {
+                sum
+            }
+        },
+    )
 }
 
 pub fn part2(input: &Vec<Line>) -> i32 {
-    let mut count = vec![vec![0; 1000]; 1000];
+    let mut count = [0; 1000 * 1000];
     for line in input {
         let x_dir = (line.end.x - line.begin.x).signum();
         let y_dir = (line.end.y - line.begin.y).signum();
 
         let mut pos = line.begin;
         while pos != line.end {
-            count[pos.x as usize][pos.y as usize] += 1;
+            count[(pos.x * 1000 + pos.y) as usize] += 1;
             pos.x += x_dir;
             pos.y += y_dir;
         }
-        count[pos.x as usize][pos.y as usize] += 1;
+        count[(pos.x * 1000 + pos.y) as usize] += 1;
     }
 
     // for y in 0..1000 {
@@ -85,7 +95,16 @@ pub fn part2(input: &Vec<Line>) -> i32 {
     //     println!();
     // }
 
-    count.iter().flat_map(|v| v).filter(|c| **c > 1).count() as i32
+    count.iter().fold(
+        0,
+        |sum, &num_overlaps| {
+            if num_overlaps > 1 {
+                sum + 1
+            } else {
+                sum
+            }
+        },
+    )
 }
 
 #[cfg(test)]
