@@ -8,6 +8,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 mod util;
 
 fn ex2<IN, OUT1, OUT2, FP, F1, F2>(day: i32, parse: FP, p1: F1, p2: F2)
