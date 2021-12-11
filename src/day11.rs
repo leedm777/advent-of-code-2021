@@ -115,8 +115,15 @@ pub fn _part1(o: &Octopuses, num_rounds: i32) -> usize {
 pub fn part1(o: &Octopuses) -> usize {
     _part1(o, 100)
 }
-pub fn part2(_input: &Octopuses) -> i32 {
-    0
+pub fn part2(o: &Octopuses) -> i32 {
+    let mut octopuses = o.clone();
+    let mut round = 0;
+
+    while !octopuses.flashed.iter().flatten().all(|f| *f) {
+        octopuses = octopuses.next();
+        round += 1;
+    }
+    round
 }
 
 #[cfg(test)]
@@ -205,6 +212,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 334);
     }
 }

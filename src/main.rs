@@ -50,4 +50,5 @@ fn main() {
     ex2(8, day08::parse, day08::part1, day08::part2);
     ex2(9, day09::parse, day09::part1, day09::part2);
     ex2(10, day10::parse, day10::part1, day10::part2);
+    ex2(11, day11::parse, day11::part1, day11::part2);
 }
