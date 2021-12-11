@@ -59,13 +59,13 @@ pub fn parse(input: &str) -> Vec<Entry> {
     return input.lines().map(parse_entry).collect();
 }
 
-pub fn part1(input: &Vec<Entry>) -> i32 {
+pub fn part1(input: &Vec<Entry>) -> usize {
     let matches = input
         .iter()
         .flat_map(|e| e.output.to_vec())
         .filter(|p| [2, 3, 4, 7].contains(&p.num_bits));
     // matches.clone().for_each(|s| println!("{}", s));
-    return matches.count() as i32;
+    return matches.count();
 }
 
 fn solve(entry: &Entry) -> i32 {
@@ -139,14 +139,6 @@ fn solve(entry: &Entry) -> i32 {
 }
 
 pub fn part2(input: &Vec<Entry>) -> i32 {
-    // for ch in 'a'..='g' {
-    //     let count = BASE_PATTERNS
-    //         .to_vec()
-    //         .iter()
-    //         .filter(|p| p.contains(ch))
-    //         .count();
-    //     println!("{}: {}", ch, count);
-    // }
     input.iter().map(solve).sum()
 }
 

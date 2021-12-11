@@ -10,12 +10,13 @@ mod day09;
 mod day10;
 mod util;
 
-fn ex2<IN, OUT, FP, F1, F2>(day: i32, parse: FP, p1: F1, p2: F2)
+fn ex2<IN, OUT1, OUT2, FP, F1, F2>(day: i32, parse: FP, p1: F1, p2: F2)
 where
-    OUT: std::fmt::Display,
+    OUT1: std::fmt::Display,
+    OUT2: std::fmt::Display,
     FP: Fn(&str) -> IN,
-    F1: Fn(&IN) -> OUT,
-    F2: Fn(&IN) -> OUT,
+    F1: Fn(&IN) -> OUT1,
+    F2: Fn(&IN) -> OUT2,
 {
     let input = util::read_input(day);
     let n0 = std::time::Instant::now();
