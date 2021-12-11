@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Debug)]
 pub struct Pattern {
     segments: u8,
     num_bits: u8,
@@ -21,7 +21,7 @@ fn parse_pattern(s: &str) -> Pattern {
     }
 }
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Debug)]
 pub struct Entry {
     patterns: [Pattern; 10],
     output: [Pattern; 4],
@@ -60,11 +60,11 @@ pub fn parse(input: &str) -> Vec<Entry> {
 }
 
 pub fn part1(input: &Vec<Entry>) -> usize {
-    let matches = input
-        .iter()
-        .flat_map(|e| e.output.to_vec())
-        .filter(|p| [2, 3, 4, 7].contains(&p.num_bits));
-    // matches.clone().for_each(|s| println!("{}", s));
+    let matches = input.iter().flat_map(|e| {
+        e.output
+            .iter()
+            .filter(|p| [2, 3, 4, 7].contains(&p.num_bits))
+    });
     return matches.count();
 }
 
