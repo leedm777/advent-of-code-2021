@@ -1,19 +1,46 @@
 use std::collections::HashSet;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum FoldDir {
     X,
     Y,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TransparentPaper {
-    dots: HashSet<(u32, u32)>,
-    folds: Vec<(FoldDir, u32)>,
+    dots: HashSet<(i32, i32)>,
+    folds: Vec<(FoldDir, i32)>,
 }
 
-fn pu32(input: &str) -> u32 {
-    input.parse().expect("Could not parse u32")
+impl TransparentPaper {
+    fn fold(&mut self) {
+        let mut moves: Vec<(i32, i32)> = vec![];
+        let (fold_dir, fold_val) = self.folds.pop().expect("Ran out of folds");
+
+        self.dots.iter().for_each(|(dot_x, dot_y)| {
+            if fold_dir == FoldDir::X && dot_x >= &fold_val {
+                moves.push((*dot_x, *dot_y));
+            } else if fold_dir == FoldDir::Y && dot_y >= &fold_val {
+                moves.push((*dot_x, *dot_y));
+            }
+        });
+
+        moves.iter().for_each(|(old_x, old_y)| {
+            if fold_dir == FoldDir::X {
+                let new_x = 2 * fold_val - old_x;
+                self.dots.remove(&(*old_x, *old_y));
+                self.dots.insert((new_x, *old_y));
+            } else if fold_dir == FoldDir::Y {
+                let new_y = 2 * fold_val - old_y;
+                self.dots.remove(&(*old_x, *old_y));
+                self.dots.insert((*old_x, new_y));
+            }
+        })
+    }
+}
+
+fn pi32(input: &str) -> i32 {
+    input.parse().expect("Could not parse i32")
 }
 
 pub fn parse(input: &str) -> TransparentPaper {
@@ -22,11 +49,11 @@ pub fn parse(input: &str) -> TransparentPaper {
         .take_while(|s| !s.is_empty())
         .map(|line| {
             let (x, y) = line.split_once(",").expect("Could not parse dot");
-            (pu32(x), pu32(y))
+            (pi32(x), pi32(y))
         })
         .collect();
 
-    let mut folds: Vec<(FoldDir, u32)> = input
+    let mut folds: Vec<(FoldDir, i32)> = input
         .lines()
         .skip_while(|s| !s.is_empty())
         .skip(1)
@@ -37,7 +64,7 @@ pub fn parse(input: &str) -> TransparentPaper {
             } else {
                 FoldDir::Y
             };
-            let val = pu32(val);
+            let val = pi32(val);
             (dir, val)
         })
         .collect();
@@ -47,8 +74,23 @@ pub fn parse(input: &str) -> TransparentPaper {
     TransparentPaper { dots, folds }
 }
 
-pub fn part1(_input: &TransparentPaper) -> i32 {
-    0
+pub fn part1(paper: &TransparentPaper) -> usize {
+    let mut paper = paper.clone();
+    paper.fold();
+
+    // for y in 0..=14 {
+    //     for x in 0..=10 {
+    //         let dot = paper.dots.contains(&(x, y));
+    //         if dot {
+    //             print!("#");
+    //         } else {
+    //             print!(".");
+    //         }
+    //     }
+    //     println!();
+    // }
+
+    paper.dots.len()
 }
 
 pub fn part2(_input: &TransparentPaper) -> i32 {
@@ -97,24 +139,24 @@ mod tests {
         let expected = TransparentPaper {
             dots: HashSet::from_iter(
                 [
-                    (6u32, 10u32),
-                    (0u32, 14u32),
-                    (9u32, 10u32),
-                    (0u32, 3u32),
-                    (10u32, 4u32),
-                    (4u32, 11u32),
-                    (6u32, 0u32),
-                    (6u32, 12u32),
-                    (4u32, 1u32),
-                    (0u32, 13u32),
-                    (10u32, 12u32),
-                    (3u32, 4u32),
-                    (3u32, 0u32),
-                    (8u32, 4u32),
-                    (1u32, 10u32),
-                    (2u32, 14u32),
-                    (8u32, 10u32),
-                    (9u32, 0u32),
+                    (6, 10),
+                    (0, 14),
+                    (9, 10),
+                    (0, 3),
+                    (10, 4),
+                    (4, 11),
+                    (6, 0),
+                    (6, 12),
+                    (4, 1),
+                    (0, 13),
+                    (10, 12),
+                    (3, 4),
+                    (3, 0),
+                    (8, 4),
+                    (1, 10),
+                    (2, 14),
+                    (8, 10),
+                    (9, 0),
                 ]
                 .iter()
                 .cloned(),
@@ -133,7 +175,7 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 942);
     }
 
     #[test]
