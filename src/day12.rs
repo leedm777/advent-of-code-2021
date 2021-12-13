@@ -14,13 +14,6 @@ impl Cave {
         }
     }
 
-    fn create_for_test(id: &str, neighbors: &[&str]) -> Cave {
-        Cave {
-            id: id.to_string(),
-            neighbors: neighbors.iter().map(|s| s.to_string()).collect(),
-        }
-    }
-
     fn is_small_cave(id: &str) -> bool {
         return id.chars().all(|ch| ch.is_lowercase());
     }
@@ -61,27 +54,54 @@ pub fn parse(input: &str) -> Caves {
     caves
 }
 
+struct Path {
+    steps: Vec<String>,
+    double_visit: bool,
+}
+
+impl Path {
+    fn init() -> Path {
+        Path {
+            steps: vec!["start".to_string()],
+            double_visit: false,
+        }
+    }
+
+    fn next_path(&self, id: &str) -> Path {
+        let mut steps = self.steps.clone();
+        steps.push(id.to_string());
+        Path {
+            steps,
+            double_visit: self.double_visit,
+        }
+    }
+
+    fn last(&self) -> &String {
+        self.steps.last().expect("Found an empty todo path")
+    }
+
+    fn contains(&self, id: &String) -> bool {
+        self.steps.contains(id)
+    }
+}
+
 pub fn part1(caves: &Caves) -> usize {
     let mut paths = vec![];
-    let mut todo = vec![vec!["start".to_string()]];
+    let mut todo = vec![Path::init()];
 
     while let Some(path) = todo.pop() {
-        let node = path.last().expect("Found an empty todo path");
+        let node = path.last();
         let node = caves.map.get(node).expect("Found an unexpected cave id");
         for neighbor in &node.neighbors {
-            if Cave::is_small_cave(&neighbor) && path.contains(&neighbor) {
+            if neighbor == "end" {
+                // done
+                paths.push(path.next_path("end"));
+            } else if Cave::is_small_cave(&neighbor) && path.contains(&neighbor) {
                 // small cave already visited; skip
                 continue;
-            } else if neighbor == "end" {
-                // done
-                let mut complete_path = path.clone();
-                complete_path.push("end".to_string());
-                paths.push(complete_path);
             } else {
                 // found another path to search
-                let mut next_path = path.clone();
-                next_path.push(neighbor.to_string());
-                todo.push(next_path);
+                todo.push(path.next_path(neighbor));
             }
         }
     }
@@ -89,14 +109,49 @@ pub fn part1(caves: &Caves) -> usize {
     paths.len()
 }
 
-pub fn part2(_input: &Caves) -> i32 {
-    0
+pub fn part2(caves: &Caves) -> usize {
+    let mut paths = vec![];
+    let mut todo = vec![Path::init()];
+
+    while let Some(path) = todo.pop() {
+        let node = path.last();
+        let node = caves.map.get(node).expect("Found an unexpected cave id");
+        for neighbor in &node.neighbors {
+            if neighbor == "end" {
+                // done
+                paths.push(path.next_path("end"));
+            } else if neighbor == "start" {
+                // cannot revisit the start
+                continue;
+            } else if Cave::is_small_cave(&neighbor) && path.contains(&neighbor) {
+                if path.double_visit {
+                    // already paid a double visit; skip
+                    continue;
+                }
+                let mut next_path = path.next_path(neighbor);
+                next_path.double_visit = true;
+                todo.push(next_path);
+            } else {
+                // found another path to search
+                todo.push(path.next_path(neighbor));
+            }
+        }
+    }
+
+    paths.len()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::util;
+
+    fn test_cave(id: &str, neighbors: &[&str]) -> Cave {
+        Cave {
+            id: id.to_string(),
+            neighbors: neighbors.iter().map(|s| s.to_string()).collect(),
+        }
+    }
 
     fn ex1() -> String {
         vec!["start-A", "start-b", "A-c", "A-b", "b-d", "A-end", "b-end"].join("\n")
@@ -125,21 +180,12 @@ mod tests {
         let actual = parse(&ex1());
         let expected = Caves {
             map: [
-                (
-                    "start".to_string(),
-                    Cave::create_for_test("start", &["A", "b"]),
-                ),
-                (
-                    "A".to_string(),
-                    Cave::create_for_test("A", &["start", "c", "b", "end"]),
-                ),
-                (
-                    "b".to_string(),
-                    Cave::create_for_test("b", &["start", "A", "d", "end"]),
-                ),
-                ("c".to_string(), Cave::create_for_test("c", &["A"])),
-                ("d".to_string(), Cave::create_for_test("d", &["b"])),
-                ("end".to_string(), Cave::create_for_test("end", &["A", "b"])),
+                ("start".to_string(), test_cave("start", &["A", "b"])),
+                ("A".to_string(), test_cave("A", &["start", "c", "b", "end"])),
+                ("b".to_string(), test_cave("b", &["start", "A", "d", "end"])),
+                ("c".to_string(), test_cave("c", &["A"])),
+                ("d".to_string(), test_cave("d", &["b"])),
+                ("end".to_string(), test_cave("end", &["A", "b"])),
             ]
             .iter()
             .cloned()
@@ -185,12 +231,12 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&parse(&ex1()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 36);
     }
 
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 137948);
     }
 }
