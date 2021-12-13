@@ -27,15 +27,18 @@ curl \
 head ${input}
 
 cat <<EOF > src/day${day}.rs
-pub fn parse(input: &str) -> Vec<&str> {
+pub struct Puzzle {
+}
+
+pub fn parse(input: &str) -> Puzzle {
     input.lines().collect()
 }
 
-pub fn part1(_input: &Vec<&str>) -> i32 {
+pub fn part1(_input: &Puzzle) -> i32 {
     0
 }
 
-pub fn part2(_input: &Vec<&str>) -> i32 {
+pub fn part2(_input: &Puzzle) -> i32 {
     0
 }
 
