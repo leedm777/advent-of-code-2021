@@ -93,8 +93,31 @@ pub fn part1(paper: &TransparentPaper) -> usize {
     paper.dots.len()
 }
 
-pub fn part2(_input: &TransparentPaper) -> i32 {
-    0
+pub fn part2(paper: &TransparentPaper) -> usize {
+    let mut paper = paper.clone();
+    while !paper.folds.is_empty() {
+        paper.fold();
+    }
+
+    // The actual challenge was to read the characters that are generated. I'm not going to do
+    // that sort of thing, so instead we'll just print it when we need it and stick to counting
+    // dots
+
+    // let &max_x = paper.dots.iter().map(|(x, _)| x).max().expect("No dots?");
+    // let &max_y = paper.dots.iter().map(|(_, y)| y).max().expect("No dots?");
+    // for y in 0..=max_y {
+    //     for x in 0..=max_x {
+    //         let dot = paper.dots.contains(&(x, y));
+    //         if dot {
+    //             print!("#");
+    //         } else {
+    //             print!(" ");
+    //         }
+    //     }
+    //     println!();
+    // }
+
+    paper.dots.len()
 }
 
 #[cfg(test)]
@@ -181,12 +204,12 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&parse(&ex1()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 16);
     }
 
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 101);
     }
 }
