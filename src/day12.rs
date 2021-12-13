@@ -6,11 +6,6 @@ pub struct Cave {
     neighbors: HashSet<String>,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Caves {
-    map: HashMap<String, Cave>,
-}
-
 impl Cave {
     fn create(id: &str) -> Cave {
         Cave {
@@ -25,6 +20,15 @@ impl Cave {
             neighbors: neighbors.iter().map(|s| s.to_string()).collect(),
         }
     }
+
+    fn is_small_cave(id: &str) -> bool {
+        return id.chars().all(|ch| ch.is_lowercase());
+    }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct Caves {
+    map: HashMap<String, Cave>,
 }
 
 impl Caves {
@@ -57,8 +61,32 @@ pub fn parse(input: &str) -> Caves {
     caves
 }
 
-pub fn part1(_input: &Caves) -> i32 {
-    0
+pub fn part1(caves: &Caves) -> usize {
+    let mut paths = vec![];
+    let mut todo = vec![vec!["start".to_string()]];
+
+    while let Some(path) = todo.pop() {
+        let node = path.last().expect("Found an empty todo path");
+        let node = caves.map.get(node).expect("Found an unexpected cave id");
+        for neighbor in &node.neighbors {
+            if Cave::is_small_cave(&neighbor) && path.contains(&neighbor) {
+                // small cave already visited; skip
+                continue;
+            } else if neighbor == "end" {
+                // done
+                let mut complete_path = path.clone();
+                complete_path.push("end".to_string());
+                paths.push(complete_path);
+            } else {
+                // found another path to search
+                let mut next_path = path.clone();
+                next_path.push(neighbor.to_string());
+                todo.push(next_path);
+            }
+        }
+    }
+
+    paths.len()
 }
 
 pub fn part2(_input: &Caves) -> i32 {
@@ -151,7 +179,7 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 4970);
     }
 
     #[test]
@@ -166,23 +194,3 @@ mod tests {
         assert_eq!(actual, 0);
     }
 }
-
-/*
-Left:  [
-"start"
-"A",
-"b",
-"c",
-"d",
-"end",
-]
-Right: [
-"start",
-"c",
-"d",
-"A",
-"end",
-"b"
-]
-
- */
