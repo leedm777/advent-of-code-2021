@@ -88,7 +88,7 @@ impl Path {
 }
 
 pub fn part1(caves: &Caves) -> usize {
-    let mut paths = vec![];
+    let mut num_paths: usize = 0;
     let mut todo = vec![Path::init()];
 
     while let Some(path) = todo.pop() {
@@ -97,7 +97,7 @@ pub fn part1(caves: &Caves) -> usize {
         for neighbor in &node.neighbors {
             if neighbor == "end" {
                 // done
-                paths.push(path.next_path("end"));
+                num_paths += 1;
             } else if Cave::is_small_cave(&neighbor) && path.contains(&neighbor) {
                 // small cave already visited; skip
                 continue;
@@ -108,11 +108,11 @@ pub fn part1(caves: &Caves) -> usize {
         }
     }
 
-    paths.len()
+    num_paths
 }
 
 pub fn part2(caves: &Caves) -> usize {
-    let mut paths = vec![];
+    let mut num_paths: usize = 0;
     let mut todo = vec![Path::init()];
 
     while let Some(path) = todo.pop() {
@@ -121,7 +121,7 @@ pub fn part2(caves: &Caves) -> usize {
         for neighbor in &node.neighbors {
             if neighbor == "end" {
                 // done
-                paths.push(path.next_path("end"));
+                num_paths += 1;
             } else if neighbor == "start" {
                 // cannot revisit the start
                 continue;
@@ -140,7 +140,7 @@ pub fn part2(caves: &Caves) -> usize {
         }
     }
 
-    paths.len()
+    num_paths
 }
 
 #[cfg(test)]
