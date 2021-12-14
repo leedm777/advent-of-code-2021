@@ -69,8 +69,22 @@ pub fn part1(poly: &Polymerization) -> i32 {
     max - min
 }
 
-pub fn part2(_input: &Polymerization) -> i32 {
-    0
+pub fn part2(poly: &Polymerization) -> usize {
+    let mut poly = poly.clone();
+
+    for i in 0..40 {
+        poly.step();
+    }
+
+    let mut char_counts = HashMap::<char, usize>::new();
+    for ch in poly.polymer_template.chars() {
+        *char_counts.entry(ch).or_insert(0) += 1;
+    }
+
+    let max = char_counts.values().max().expect("Could not find max");
+    let min = char_counts.values().min().expect("Could not find min");
+
+    max - min
 }
 
 #[cfg(test)]
@@ -143,7 +157,7 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&parse(&ex1()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 2188189693529);
     }
 
     #[test]
