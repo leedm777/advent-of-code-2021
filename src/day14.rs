@@ -7,25 +7,70 @@ pub struct Polymerization {
 }
 
 impl Polymerization {
-    fn step(&mut self) {
+    // First non-scalable solution
+    // fn step(&mut self) {
+    //     let chars = self.polymer_template.chars().collect::<Vec<char>>();
+    //     let insertions = chars
+    //         .windows(2)
+    //         .map(|chars| {
+    //             let ch1 = chars[0];
+    //             let ch2 = chars[1];
+    //             let &insert = self
+    //                 .pair_insertion_rules
+    //                 .get(&(ch1, ch2))
+    //                 .expect("Could not find insertion rule");
+    //             insert
+    //         })
+    //         .collect::<Vec<char>>();
+    //
+    //     let len = self.polymer_template.len();
+    //     for (idx, &ch) in insertions.iter().rev().enumerate() {
+    //         self.polymer_template.insert(len - idx - 1, ch);
+    //     }
+    // }
+
+    fn solve(&self, steps: i32) -> usize {
+        let mut pair_counts = HashMap::<(char, char), usize>::new();
         let chars = self.polymer_template.chars().collect::<Vec<char>>();
-        let insertions = chars
-            .windows(2)
-            .map(|chars| {
-                let ch1 = chars[0];
-                let ch2 = chars[1];
+
+        chars.windows(2).for_each(|ch| {
+            *pair_counts.entry((ch[0], ch[1])).or_insert(0) += 1;
+        });
+
+        for _ in 0..steps {
+            let mut next_pair_counts = HashMap::<(char, char), usize>::new();
+
+            for ((ch1, ch2), count) in pair_counts {
                 let &insert = self
                     .pair_insertion_rules
                     .get(&(ch1, ch2))
-                    .expect("Could not find insertion rule");
-                insert
-            })
-            .collect::<Vec<char>>();
+                    .expect("Could not find pair");
 
-        let len = self.polymer_template.len();
-        for (idx, &ch) in insertions.iter().rev().enumerate() {
-            self.polymer_template.insert(len - idx - 1, ch);
+                *next_pair_counts.entry((ch1, insert)).or_insert(0) += count;
+                *next_pair_counts.entry((insert, ch2)).or_insert(0) += count;
+            }
+
+            pair_counts = next_pair_counts;
         }
+
+        // count the 2nd char in each pair to count all the characters
+        let mut char_counter = HashMap::new();
+        pair_counts.iter().for_each(|(&(_, ch2), &count)| {
+            *char_counter.entry(ch2).or_insert(0) += count;
+        });
+
+        // plus one for the first character
+        let first_char = self
+            .polymer_template
+            .chars()
+            .next()
+            .expect("Could not find first char");
+        *char_counter.entry(first_char).or_insert(0) += 1;
+
+        let &max = char_counter.values().max().expect("Could not find max");
+        let &min = char_counter.values().min().expect("Could not find min");
+
+        max - min
     }
 }
 
@@ -51,66 +96,12 @@ pub fn parse(input: &str) -> Polymerization {
     }
 }
 
-pub fn part1(poly: &Polymerization) -> i32 {
-    let mut poly = poly.clone();
-
-    for _ in 0..10 {
-        poly.step();
-    }
-
-    let mut char_counts = HashMap::<char, i32>::new();
-    for ch in poly.polymer_template.chars() {
-        *char_counts.entry(ch).or_insert(0) += 1;
-    }
-
-    let max = char_counts.values().max().expect("Could not find max");
-    let min = char_counts.values().min().expect("Could not find min");
-
-    max - min
+pub fn part1(poly: &Polymerization) -> usize {
+    poly.solve(10)
 }
 
 pub fn part2(poly: &Polymerization) -> usize {
-    let mut pair_counts = HashMap::<(char, char), usize>::new();
-    let chars = poly.polymer_template.chars().collect::<Vec<char>>();
-
-    chars.windows(2).for_each(|ch| {
-        *pair_counts.entry((ch[0], ch[1])).or_insert(0) += 1;
-    });
-
-    for _ in 0..40 {
-        let mut next_pair_counts = HashMap::<(char, char), usize>::new();
-
-        for ((ch1, ch2), count) in pair_counts {
-            let &insert = poly
-                .pair_insertion_rules
-                .get(&(ch1, ch2))
-                .expect("Could not find pair");
-
-            *next_pair_counts.entry((ch1, insert)).or_insert(0) += count;
-            *next_pair_counts.entry((insert, ch2)).or_insert(0) += count;
-        }
-
-        pair_counts = next_pair_counts;
-    }
-
-    // count the 2nd char in each pair to count all the characters
-    let mut char_counter = HashMap::new();
-    pair_counts.iter().for_each(|(&(_, ch2), &count)| {
-        *char_counter.entry(ch2).or_insert(0) += count;
-    });
-
-    // plus one for the first character
-    let first_char = poly
-        .polymer_template
-        .chars()
-        .next()
-        .expect("Could not find first char");
-    *char_counter.entry(first_char).or_insert(0) += 1;
-
-    let &max = char_counter.values().max().expect("Could not find max");
-    let &min = char_counter.values().min().expect("Could not find min");
-
-    max - min
+    poly.solve(40)
 }
 
 #[cfg(test)]
@@ -161,12 +152,13 @@ mod tests {
             }
         )
     }
-    #[test]
-    fn test_step_ex1() {
-        let mut actual = parse(&ex1());
-        actual.step();
-        assert_eq!(actual.polymer_template, "NCNBCHB");
-    }
+
+    // #[test]
+    // fn test_step_ex1() {
+    //     let mut actual = parse(&ex1());
+    //     actual.step();
+    //     assert_eq!(actual.polymer_template, "NCNBCHB");
+    // }
 
     #[test]
     fn test_part1_ex1() {
