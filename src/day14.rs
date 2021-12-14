@@ -70,19 +70,45 @@ pub fn part1(poly: &Polymerization) -> i32 {
 }
 
 pub fn part2(poly: &Polymerization) -> usize {
-    let mut poly = poly.clone();
+    let mut pair_counts = HashMap::<(char, char), usize>::new();
+    let chars = poly.polymer_template.chars().collect::<Vec<char>>();
 
-    for i in 0..40 {
-        poly.step();
+    chars.windows(2).for_each(|ch| {
+        *pair_counts.entry((ch[0], ch[1])).or_insert(0) += 1;
+    });
+
+    for _ in 0..40 {
+        let mut next_pair_counts = HashMap::<(char, char), usize>::new();
+
+        for ((ch1, ch2), count) in pair_counts {
+            let &insert = poly
+                .pair_insertion_rules
+                .get(&(ch1, ch2))
+                .expect("Could not find pair");
+
+            *next_pair_counts.entry((ch1, insert)).or_insert(0) += count;
+            *next_pair_counts.entry((insert, ch2)).or_insert(0) += count;
+        }
+
+        pair_counts = next_pair_counts;
     }
 
-    let mut char_counts = HashMap::<char, usize>::new();
-    for ch in poly.polymer_template.chars() {
-        *char_counts.entry(ch).or_insert(0) += 1;
-    }
+    // count the 2nd char in each pair to count all the characters
+    let mut char_counter = HashMap::new();
+    pair_counts.iter().for_each(|(&(_, ch2), &count)| {
+        *char_counter.entry(ch2).or_insert(0) += count;
+    });
 
-    let max = char_counts.values().max().expect("Could not find max");
-    let min = char_counts.values().min().expect("Could not find min");
+    // plus one for the first character
+    let first_char = poly
+        .polymer_template
+        .chars()
+        .next()
+        .expect("Could not find first char");
+    *char_counter.entry(first_char).or_insert(0) += 1;
+
+    let &max = char_counter.values().max().expect("Could not find max");
+    let &min = char_counter.values().min().expect("Could not find min");
 
     max - min
 }
@@ -163,6 +189,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 2914365137499);
     }
 }
