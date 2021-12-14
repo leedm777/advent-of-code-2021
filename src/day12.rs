@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+// TODO: I think if I can figure out the lifetimes to use &str instead of String it would run faster
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Cave {
     id: String,
