@@ -2,6 +2,7 @@ pub trait Packet {
     fn get_version(&self) -> u8;
     fn get_type_id(&self) -> u8;
     fn get_sum_version(&self) -> u32;
+    fn get_value(&self) -> u128;
 }
 
 pub struct PacketLiteral {
@@ -19,6 +20,9 @@ impl Packet for PacketLiteral {
     }
     fn get_sum_version(&self) -> u32 {
         self.get_version() as u32
+    }
+    fn get_value(&self) -> u128 {
+        self.value
     }
 }
 
@@ -42,6 +46,55 @@ impl Packet for PacketOperator {
             .map(|p| p.get_sum_version() as u32)
             .sum();
         r + (self.get_version() as u32)
+    }
+    fn get_value(&self) -> u128 {
+        match self.type_id {
+            // 0 -> sum
+            0 => self
+                .sub_packets
+                .iter()
+                .fold(0, |sum, p| sum + p.get_value()),
+            // 1 -> product
+            1 => self
+                .sub_packets
+                .iter()
+                .fold(1, |product, p| product * p.get_value()),
+            // 2 -> min
+            2 => self
+                .sub_packets
+                .iter()
+                .fold(u128::MAX, |min, p| min.min(p.get_value())),
+            // 3 -> max
+            3 => self
+                .sub_packets
+                .iter()
+                .fold(0, |max, p| max.max(p.get_value())),
+            // 5 -> greater than (1 if sub1 > sub2)
+            5 => {
+                if self.sub_packets[0].get_value() > self.sub_packets[1].get_value() {
+                    1
+                } else {
+                    0
+                }
+            }
+            // 6 -> less than (1 if sub1 < sub2)
+            6 => {
+                if self.sub_packets[0].get_value() < self.sub_packets[1].get_value() {
+                    1
+                } else {
+                    0
+                }
+            }
+            // 7 -> equal (1 if sub1 == sub2)
+            7 => {
+                if self.sub_packets[0].get_value() == self.sub_packets[1].get_value() {
+                    1
+                } else {
+                    0
+                }
+            }
+            _ => panic!("Invalid packet type"),
+        }
     }
 }
 
@@ -163,8 +216,8 @@ pub fn part1(packet: &Box<dyn Packet>) -> u32 {
     packet.get_sum_version()
 }
 
-pub fn part2(_input: &Box<dyn Packet>) -> i32 {
-    0
+pub fn part2(packet: &Box<dyn Packet>) -> u128 {
+    packet.get_value()
 }
 
 #[cfg(test)]
@@ -230,13 +283,48 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 821);
     }
 
     #[test]
     fn test_part2_ex1() {
-        let actual = part2(&parse(&ex1()));
+        let actual = part2(&parse("C200B40A82"));
+        assert_eq!(actual, 3);
+    }
+    #[test]
+    fn test_part2_ex2() {
+        let actual = part2(&parse("04005AC33890"));
+        assert_eq!(actual, 54);
+    }
+    #[test]
+    fn test_part2_ex3() {
+        let actual = part2(&parse("880086C3E88112"));
+        assert_eq!(actual, 7);
+    }
+    #[test]
+    fn test_part2_ex4() {
+        let actual = part2(&parse("CE00C43D881120"));
+        assert_eq!(actual, 9);
+    }
+    #[test]
+    fn test_part2_ex5() {
+        let actual = part2(&parse("D8005AC2A8F0"));
+        assert_eq!(actual, 1);
+    }
+    #[test]
+    fn test_part2_ex6() {
+        let actual = part2(&parse("F600BC2D8F"));
         assert_eq!(actual, 0);
+    }
+    #[test]
+    fn test_part2_ex7() {
+        let actual = part2(&parse("9C005AC2F8F0"));
+        assert_eq!(actual, 0);
+    }
+    #[test]
+    fn test_part2_ex8() {
+        let actual = part2(&parse("9C0141080250320F1802104A08"));
+        assert_eq!(actual, 1);
     }
 
     #[test]
