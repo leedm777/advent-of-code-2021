@@ -104,6 +104,36 @@ struct Bits {
 }
 
 impl Bits {
+    fn new(input: &str) -> Self {
+        let mut data = vec![];
+        data.reserve(input.len() * 4);
+        for ch in input.trim().chars() {
+            let v = match ch {
+                '0' => 0,
+                '1' => 1,
+                '2' => 2,
+                '3' => 3,
+                '4' => 4,
+                '5' => 5,
+                '6' => 6,
+                '7' => 7,
+                '8' => 8,
+                '9' => 9,
+                'A' => 10,
+                'B' => 11,
+                'C' => 12,
+                'D' => 13,
+                'E' => 14,
+                'F' => 15,
+                _ => panic!("Invalid hex char"),
+            };
+            for shift in (0..4).rev() {
+                data.push((v & (1 << shift)) != 0);
+            }
+        }
+
+        Self { data, ptr: 0 }
+    }
     // TODO: Return type could be a type param probably
     fn read_bits(&mut self, num: usize) -> u32 {
         let mut r = 0;
@@ -177,39 +207,8 @@ impl Bits {
     }
 }
 
-fn to_bits(input: &str) -> Bits {
-    let mut data = vec![];
-    data.reserve(input.len() * 4);
-    for ch in input.trim().chars() {
-        let v = match ch {
-            '0' => 0,
-            '1' => 1,
-            '2' => 2,
-            '3' => 3,
-            '4' => 4,
-            '5' => 5,
-            '6' => 6,
-            '7' => 7,
-            '8' => 8,
-            '9' => 9,
-            'A' => 10,
-            'B' => 11,
-            'C' => 12,
-            'D' => 13,
-            'E' => 14,
-            'F' => 15,
-            _ => panic!("Invalid hex char"),
-        };
-        for shift in (0..4).rev() {
-            data.push((v & (1 << shift)) != 0);
-        }
-    }
-
-    Bits { data, ptr: 0 }
-}
-
 pub fn parse(input: &str) -> Box<dyn Packet> {
-    to_bits(input).read_packet()
+    Bits::new(input).read_packet()
 }
 
 pub fn part1(packet: &Box<dyn Packet>) -> u32 {
@@ -247,7 +246,8 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let actual = to_bits("0F1E");
+        let input = "0F1E";
+        let actual = Bits::new(input);
         assert_eq!(
             actual.data,
             vec![
