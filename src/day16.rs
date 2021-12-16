@@ -144,15 +144,12 @@ impl Bits {
 
         if type_id == 4 {
             let mut value = 0u64;
+            let mut last_nibble = false;
 
-            loop {
-                let last_nibble = self.read_bits::<u8>(1) == 0;
+            while !last_nibble {
+                last_nibble = self.read_bits::<u8>(1) == 0;
                 let nibble: u64 = self.read_bits(4);
                 value = (value << 4) | nibble;
-
-                if last_nibble {
-                    break;
-                }
             }
 
             return Box::new(PacketLiteral {
