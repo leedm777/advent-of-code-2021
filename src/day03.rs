@@ -5,9 +5,9 @@ fn count_bits(input: &Vec<String>) -> Vec<i32> {
         return acc
             .iter()
             .zip(b.chars())
-            .map(|(cnt, bit)| {
+            .map(|(&cnt, bit)| {
                 return match bit {
-                    '0' => cnt + 0,
+                    '0' => cnt,
                     '1' => cnt + 1,
                     _ => panic!("Invalid bit {}", bit),
                 };
@@ -29,18 +29,18 @@ pub fn part1(input: &Vec<String>) -> i32 {
         if bit_count_usize == len / 2 {
             panic!("Not clear what to do with {} of {}", bit_count_usize, len);
         }
-        return if bit_count_usize > len / 2 {
+        if bit_count_usize > len / 2 {
             ((g << 1) + 1, e << 1)
         } else {
             (g << 1, (e << 1) + 1)
-        };
+        }
     });
 
-    return gamma * epsilon;
+    gamma * epsilon
 }
 
 fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
-    let mut work = input.clone();
+    let mut work = input.to_owned();
     let mut bit_index = 0;
 
     while work.len() > 1 {
@@ -49,9 +49,9 @@ fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
         let half = (work.len() - 1) / 2;
 
         if bit_count > half {
-            work.retain(|bits| bits.as_bytes()[bit_index] == '1' as u8);
+            work.retain(|bits| bits.as_bytes()[bit_index] as char == '1');
         } else {
-            work.retain(|bits| bits.as_bytes()[bit_index] == '0' as u8);
+            work.retain(|bits| bits.as_bytes()[bit_index] as char == '0');
         }
         bit_index += 1;
     }
@@ -60,11 +60,11 @@ fn oxygen_generator_rating(input: &Vec<String>) -> i32 {
         panic!("Could not find oxygen generator rating");
     }
 
-    return isize::from_str_radix(&work[0], 2).unwrap() as i32;
+    isize::from_str_radix(&work[0], 2).unwrap() as i32
 }
 
 fn co2_scrubber_rating(input: &Vec<String>) -> i32 {
-    let mut work = input.clone();
+    let mut work = input.to_owned();
     let mut bit_index = 0;
 
     while work.len() > 1 {
@@ -73,9 +73,9 @@ fn co2_scrubber_rating(input: &Vec<String>) -> i32 {
         let half = (work.len() + 1) / 2;
 
         if bit_count < half {
-            work.retain(|bits| bits.as_bytes()[bit_index] == '1' as u8);
+            work.retain(|bits| bits.as_bytes()[bit_index] as char == '1');
         } else {
-            work.retain(|bits| bits.as_bytes()[bit_index] == '0' as u8);
+            work.retain(|bits| bits.as_bytes()[bit_index] as char == '0');
         }
         bit_index += 1;
     }
@@ -84,14 +84,14 @@ fn co2_scrubber_rating(input: &Vec<String>) -> i32 {
         panic!("Could not find oxygen generator rating");
     }
 
-    return isize::from_str_radix(&work[0], 2).unwrap() as i32;
+    isize::from_str_radix(&work[0], 2).unwrap() as i32
 }
 
 pub fn part2(input: &Vec<String>) -> i32 {
     let o2_rating = oxygen_generator_rating(input);
     let co2_rating = co2_scrubber_rating(input);
 
-    return o2_rating * co2_rating;
+    o2_rating * co2_rating
 }
 
 #[cfg(test)]
@@ -100,15 +100,15 @@ mod tests {
     use crate::util;
 
     fn ex1() -> String {
-        return [
+        [
             "00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000",
             "11001", "00010", "01010",
         ]
-        .join("\n");
+        .join("\n")
     }
 
     fn real() -> String {
-        return util::read_input(3);
+        util::read_input(3)
     }
 
     #[test]

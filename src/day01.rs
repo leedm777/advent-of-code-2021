@@ -27,7 +27,7 @@ mod tests {
     }
 
     fn real() -> Vec<i32> {
-        return parse(&util::read_input(1));
+        parse(&util::read_input(1))
     }
 
     #[test]

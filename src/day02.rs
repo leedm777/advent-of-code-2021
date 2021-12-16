@@ -16,10 +16,8 @@ pub fn part1(input: &Vec<String>) -> i32 {
                 _ => panic!("Invalid direction {}", dir),
             };
         })
-        .fold((0, 0), |(dx, dy), (x, y)| {
-            return (x + dx, y + dy);
-        });
-    return x * y;
+        .fold((0, 0), |(dx, dy), (x, y)| (x + dx, y + dy));
+    x * y
 }
 
 pub fn part2(input: &Vec<String>) -> i32 {
@@ -29,17 +27,15 @@ pub fn part2(input: &Vec<String>) -> i32 {
             let mut split = s.split_whitespace();
             let dir = split.next().unwrap();
             let dist = split.next().unwrap().parse::<i32>().unwrap();
-            return (dir, dist);
+            (dir, dist)
         })
-        .fold((0, 0, 0), |(x, y, aim), (dir, dist)| {
-            return match dir {
-                "forward" => (x + dist, y + dist * aim, aim),
-                "down" => (x, y, aim + dist),
-                "up" => (x, y, aim - dist),
-                _ => panic!("Invalid direction {}", dir),
-            };
+        .fold((0, 0, 0), |(x, y, aim), (dir, dist)| match dir {
+            "forward" => (x + dist, y + dist * aim, aim),
+            "down" => (x, y, aim + dist),
+            "up" => (x, y, aim - dist),
+            _ => panic!("Invalid direction {}", dir),
         });
-    return x * y;
+    x * y
 }
 
 #[cfg(test)]
@@ -62,7 +58,7 @@ mod tests {
     }
 
     fn real() -> Vec<String> {
-        return parse(&util::read_input(2));
+        parse(&util::read_input(2))
     }
 
     #[test]

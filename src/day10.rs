@@ -62,14 +62,14 @@ pub fn part2(lines: &Vec<String>) -> i64 {
                     '>' => 4,
                     _ => panic!("PANIC!!!!"),
                 })
-                .fold(0 as i64, |acc, s| 5 * acc + s);
+                .fold(0, |acc, s| 5 * acc + s);
 
             // println!("{} => {}", expected.iter().collect::<String>(), score);
             score
         })
         .filter(|s| *s > 0)
         .collect();
-    scores.sort();
+    scores.sort_unstable();
     scores[scores.len() / 2]
 }
 
@@ -95,7 +95,7 @@ mod tests {
     }
 
     fn real() -> String {
-        return util::read_input(10);
+        util::read_input(10)
     }
 
     #[test]

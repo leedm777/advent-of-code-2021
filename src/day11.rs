@@ -17,7 +17,7 @@ impl Octopuses {
             let mut row = vec![];
             let mut flashed_row = vec![];
             for ch in line.chars() {
-                let v = ch as u8 - '0' as u8;
+                let v = ch.to_digit(10).expect("Could not part digit") as u8;
                 row.push(v);
                 flashed_row.push(v == 0);
             }
@@ -54,7 +54,7 @@ impl Octopuses {
                 .for_each(|(x, y)| {
                     let x = *x;
                     let y = *y;
-                    r.energy_level[y][x] = r.energy_level[y][x] + 1;
+                    r.energy_level[y][x] += 1;
                     if r.energy_level[y][x] == 10 {
                         r.flashed[y][x] = true;
                         just_flashed.push((x, y));

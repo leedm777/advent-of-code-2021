@@ -18,9 +18,9 @@ impl TransparentPaper {
         let (fold_dir, fold_val) = self.folds.pop().expect("Ran out of folds");
 
         self.dots.iter().for_each(|(dot_x, dot_y)| {
-            if fold_dir == FoldDir::X && dot_x >= &fold_val {
-                moves.push((*dot_x, *dot_y));
-            } else if fold_dir == FoldDir::Y && dot_y >= &fold_val {
+            if fold_dir == FoldDir::X && dot_x >= &fold_val
+                || fold_dir == FoldDir::Y && dot_y >= &fold_val
+            {
                 moves.push((*dot_x, *dot_y));
             }
         });

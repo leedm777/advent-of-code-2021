@@ -20,11 +20,11 @@ pub fn parse(input: &str) -> OceanFloor {
         max_x = x;
         y += 1;
     }
-    return OceanFloor {
+    OceanFloor {
         heights,
         max_y: y,
         max_x,
-    };
+    }
 }
 
 pub fn part1(floor: &OceanFloor) -> i32 {
@@ -32,7 +32,7 @@ pub fn part1(floor: &OceanFloor) -> i32 {
         if x < 0 || y < 0 || x >= floor.max_x as i32 || y >= floor.max_y as i32 {
             return &i32::MAX;
         }
-        return &floor.heights[y as usize][x as usize];
+        &floor.heights[y as usize][x as usize]
     };
 
     let mut risk = 0;
@@ -52,7 +52,7 @@ pub fn part1(floor: &OceanFloor) -> i32 {
             }
         }
     }
-    return risk;
+    risk
 }
 
 fn merge_basins(
@@ -122,7 +122,7 @@ pub fn part2(floor: &OceanFloor) -> i32 {
         // println!();
     }
     basin_sizes[0] = 0;
-    basin_sizes.sort();
+    basin_sizes.sort_unstable();
     let n = basin_sizes.len();
     // for f in &basin_sizes {
     //     println!("{}", f);
@@ -136,18 +136,18 @@ mod tests {
     use crate::util;
 
     fn ex1() -> String {
-        return vec![
+        vec![
             "2199943210",
             "3987894921",
             "9856789892",
             "8767896789",
             "9899965678",
         ]
-        .join("\n");
+        .join("\n")
     }
 
     fn real() -> String {
-        return util::read_input(9);
+        util::read_input(9)
     }
 
     #[test]

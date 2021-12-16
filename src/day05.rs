@@ -25,13 +25,13 @@ fn parse_pos(s: &str) -> Pos {
     let (x, y) = s.split_once(",").expect("Could not find , in x");
     let x = x.parse().expect("Could not parse x");
     let y = y.parse().expect("Could not parse y");
-    return Pos { x, y };
+    Pos { x, y }
 }
 fn parse_line(line: &str) -> Line {
     let (begin, end) = line.split_once(" -> ").expect("Could not find -> in line");
     let begin = parse_pos(begin);
     let end = parse_pos(end);
-    return Line { begin, end };
+    Line { begin, end }
 }
 
 pub fn parse(input: &str) -> Vec<Line> {
@@ -39,7 +39,7 @@ pub fn parse(input: &str) -> Vec<Line> {
 }
 
 fn score_count(count: &Vec<Vec<i32>>) -> i32 {
-    count.iter().flat_map(|v| v).fold(
+    count.iter().flatten().fold(
         0,
         |sum, &num_overlaps| {
             if num_overlaps > 1 {

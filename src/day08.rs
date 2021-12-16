@@ -52,7 +52,7 @@ fn parse_entry(line: &str) -> Entry {
         output.next().expect("Could not parse output"),
     ];
 
-    return Entry { patterns, output };
+    Entry { patterns, output }
 }
 
 pub fn parse(input: &str) -> Vec<Entry> {
@@ -65,7 +65,7 @@ pub fn part1(input: &Vec<Entry>) -> usize {
             .iter()
             .filter(|p| [2, 3, 4, 7].contains(&p.num_bits))
     });
-    return matches.count();
+    matches.count()
 }
 
 fn solve(entry: &Entry) -> i32 {
@@ -135,7 +135,7 @@ fn solve(entry: &Entry) -> i32 {
             .expect("Could not decode output");
         r = r * 10 + v;
     }
-    return r;
+    r
 }
 
 pub fn part2(input: &Vec<Entry>) -> i32 {
@@ -148,7 +148,7 @@ mod tests {
     use crate::util;
 
     fn ex1() -> String {
-        return [
+        [
             "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe",
             "edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc",
             "fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg",
@@ -159,11 +159,11 @@ mod tests {
             "bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef",
             "egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb",
             "gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce",
-        ].join("\n");
+        ].join("\n")
     }
 
     fn real() -> String {
-        return util::read_input(8);
+        util::read_input(8)
     }
 
     #[test]

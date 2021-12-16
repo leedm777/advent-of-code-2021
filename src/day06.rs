@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub fn parse(input: &str) -> Vec<i32> {
-    return crate::util::as_ints(input);
+    crate::util::as_ints(input)
 }
 
 fn next(fish_counts: &HashMap<i32, usize>) -> HashMap<i32, usize> {
@@ -18,7 +18,7 @@ fn next(fish_counts: &HashMap<i32, usize>) -> HashMap<i32, usize> {
         }
     }
 
-    return r;
+    r
 }
 
 fn grow(input: &Vec<i32>, days: i32) -> usize {
@@ -35,11 +35,11 @@ fn grow(input: &Vec<i32>, days: i32) -> usize {
 }
 
 pub fn part1(input: &Vec<i32>) -> usize {
-    return grow(input, 80);
+    grow(input, 80)
 }
 
 pub fn part2(input: &Vec<i32>) -> usize {
-    return grow(input, 256);
+    grow(input, 256)
 }
 
 #[cfg(test)]
@@ -52,7 +52,7 @@ mod tests {
     }
 
     fn real() -> Vec<i32> {
-        return parse(&util::read_input(6));
+        parse(&util::read_input(6))
     }
 
     #[test]

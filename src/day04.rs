@@ -31,7 +31,7 @@ impl Board {
             return true;
         }
 
-        return false;
+        false
     }
 
     fn score(&self) -> i32 {
@@ -45,7 +45,7 @@ impl Board {
             }
         }
 
-        return r;
+        r
     }
 }
 
@@ -61,7 +61,7 @@ impl Game {
         for board in &mut self.boards {
             board.play(n);
         }
-        return n;
+        n
     }
 
     fn find_winner(&self) -> Option<&Board> {
@@ -83,7 +83,7 @@ fn parse_board(input: &[&str]) -> Board {
         }
     }
 
-    return r;
+    r
 }
 
 fn parse_game(input: &Vec<&str>) -> Game {
@@ -93,20 +93,20 @@ fn parse_game(input: &Vec<&str>) -> Game {
         .unwrap()
         .first()
         .unwrap()
-        .split(",")
+        .split(',')
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
     moves.reverse();
     let boards = splits;
-    return Game {
-        moves: moves,
-        boards: boards.map(|b| parse_board(b)).collect(),
-    };
+    Game {
+        moves,
+        boards: boards.map(parse_board).collect(),
+    }
 }
 
 pub fn parse(input: &str) -> Game {
     let lines: Vec<&str> = input.lines().collect();
-    return parse_game(&lines);
+    parse_game(&lines)
 }
 
 pub fn part1(game: &Game) -> i32 {
@@ -158,7 +158,7 @@ mod tests {
     use crate::util;
 
     fn ex0() -> String {
-        return [
+        [
             "7,4,9,5",
             "",
             "22 13 17 11  0",
@@ -167,11 +167,11 @@ mod tests {
             " 6 10  3 18  5",
             " 1 12 20 15 19",
         ]
-        .join("\n");
+        .join("\n")
     }
 
     fn ex1() -> Game {
-        return parse_game(&vec![
+        parse_game(&vec![
             "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1",
             "",
             "22 13 17 11  0",
@@ -191,11 +191,11 @@ mod tests {
             "18  8 23 26 20",
             "22 11 13  6  5",
             " 2  0 12  3  7",
-        ]);
+        ])
     }
 
     fn real() -> Game {
-        return parse(&util::read_input(4));
+        parse(&util::read_input(4))
     }
 
     #[test]
