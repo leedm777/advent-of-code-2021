@@ -13,6 +13,7 @@ mod day12;
 mod day13;
 mod day14;
 mod day15;
+mod day16;
 mod util;
 
 fn ex2<IN, OUT1, OUT2, FP, F1, F2>(day: i32, parse: FP, p1: F1, p2: F2)
@@ -59,4 +60,5 @@ fn main() {
     ex2(13, day13::parse, day13::part1, day13::part2);
     ex2(14, day14::parse, day14::part1, day14::part2);
     ex2(15, day15::parse, day15::part1, day15::part2);
+    ex2(16, day16::parse, day16::part1, day16::part2);
 }
