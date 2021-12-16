@@ -2,13 +2,13 @@ pub trait Packet {
     fn get_version(&self) -> u8;
     fn get_type_id(&self) -> u8;
     fn get_sum_version(&self) -> u32;
-    fn get_value(&self) -> u128;
+    fn get_value(&self) -> u64;
 }
 
 pub struct PacketLiteral {
     version: u8,
     type_id: u8, // always 4
-    value: u128,
+    value: u64,
 }
 
 impl Packet for PacketLiteral {
@@ -21,7 +21,7 @@ impl Packet for PacketLiteral {
     fn get_sum_version(&self) -> u32 {
         self.get_version() as u32
     }
-    fn get_value(&self) -> u128 {
+    fn get_value(&self) -> u64 {
         self.value
     }
 }
@@ -47,7 +47,7 @@ impl Packet for PacketOperator {
             .sum();
         r + (self.get_version() as u32)
     }
-    fn get_value(&self) -> u128 {
+    fn get_value(&self) -> u64 {
         match self.type_id {
             // 0 -> sum
             0 => self
@@ -63,7 +63,7 @@ impl Packet for PacketOperator {
             2 => self
                 .sub_packets
                 .iter()
-                .fold(u128::MAX, |min, p| min.min(p.get_value())),
+                .fold(u64::MAX, |min, p| min.min(p.get_value())),
             // 3 -> max
             3 => self
                 .sub_packets
@@ -127,11 +127,11 @@ impl Bits {
         let type_id = self.read_bits(3) as u8;
 
         if type_id == 4 {
-            let mut value = 0u128;
+            let mut value = 0u64;
 
             loop {
                 let last_nibble = self.read_bits(1) == 0;
-                let nibble = self.read_bits(4) as u128;
+                let nibble = self.read_bits(4) as u64;
                 value = (value << 4) | nibble;
 
                 if last_nibble {
@@ -216,7 +216,7 @@ pub fn part1(packet: &Box<dyn Packet>) -> u32 {
     packet.get_sum_version()
 }
 
-pub fn part2(packet: &Box<dyn Packet>) -> u128 {
+pub fn part2(packet: &Box<dyn Packet>) -> u64 {
     packet.get_value()
 }
 
@@ -330,6 +330,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 2056021084691);
     }
 }
