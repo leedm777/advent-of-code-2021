@@ -116,17 +116,21 @@ impl Bits {
 
         Self { data, ptr: 0 }
     }
-    // TODO: Return type could be a type param probably
-    fn read_bits(&mut self, num: usize) -> u32 {
-        let mut r = 0;
-        if num > 32 {
+
+    // Generic-ness from https://github.com/gokberkkocak/adventofcode/blob/master/src/aoc2021/day16.rs
+    fn read_bits<T>(&mut self, num: usize) -> T
+    where
+        T: std::ops::Shl<Output = T> + std::ops::BitOr<Output = T> + From<u8> + Default,
+    {
+        let mut r = T::default();
+        if num > 8 * std::mem::size_of::<T>() {
             panic!("TOO MANY BITS");
         }
         for i in self.ptr..(self.ptr + num) {
             if self.data[i] {
-                r = (r << 1) | 1;
+                r = (r << T::from(1)) | T::from(1);
             } else {
-                r <<= 1;
+                r = r << T::from(1);
             }
         }
         self.ptr += num;
@@ -135,15 +139,15 @@ impl Bits {
     }
 
     fn read_packet(&mut self) -> Box<dyn Packet> {
-        let version = self.read_bits(3) as u8;
-        let type_id = self.read_bits(3) as u8;
+        let version: u8 = self.read_bits(3);
+        let type_id: u8 = self.read_bits(3);
 
         if type_id == 4 {
             let mut value = 0u64;
 
             loop {
-                let last_nibble = self.read_bits(1) == 0;
-                let nibble = self.read_bits(4) as u64;
+                let last_nibble = self.read_bits::<u8>(1) == 0;
+                let nibble: u64 = self.read_bits(4);
                 value = (value << 4) | nibble;
 
                 if last_nibble {
@@ -159,12 +163,12 @@ impl Bits {
         }
 
         // operator
-        let length_type_id = self.read_bits(1);
+        let length_type_id: u8 = self.read_bits(1);
         let mut sub_packets = vec![];
 
         if length_type_id == 0 {
             // 15 bits for total length of bits for subpackets
-            let num_bits = self.read_bits(15) as usize;
+            let num_bits: usize = self.read_bits(15);
             let end_bits = self.ptr + num_bits;
 
             while self.ptr < end_bits {
