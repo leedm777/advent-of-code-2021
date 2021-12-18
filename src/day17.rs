@@ -6,6 +6,27 @@ pub struct TargetArea {
     y_max: i32,
 }
 
+impl TargetArea {
+    fn hit(&self, mut v_x: i32, mut v_y: i32) -> bool {
+        // There's probably a math way to do this, but simulation is fast enough
+        let mut x = 0;
+        let mut y = 0;
+        while y >= self.y_min {
+            if self.x_min <= x && x <= self.x_max && self.y_min <= y && y <= self.y_max {
+                return true;
+            }
+
+            x += v_x;
+            y += v_y;
+
+            v_x = 0.max(v_x - 1);
+            v_y = v_y - 1;
+        }
+
+        false
+    }
+}
+
 pub fn parse(input: &str) -> TargetArea {
     let re = regex::Regex::new(
         // r"target area: x=(?P<min_x>\d+)..(?P<max_x>\d+), y(?P<min_y>-?\d+)..(?P<max_y>-?\d+)",
@@ -58,8 +79,37 @@ pub fn part1(target: &TargetArea) -> i32 {
     v_y * (v_y + 1) / 2
 }
 
-pub fn part2(_input: &TargetArea) -> i32 {
-    0
+pub fn part2(target: &TargetArea) -> i32 {
+    let mut num_velocities = 0;
+
+    // figuring out x_min
+    //   s = n * (a + l) / 2
+    //   s = x_min
+    //   a = x_min
+    //   l = 1
+    //   n^2 + n - 2 * x_min
+    // Then solve with quadratic
+    //   (-b +- sqrt(b^2 - 4ac)) / 2*a
+    //   a = 1
+    //   b = 1
+    //   c = -2*x_min
+    //   (-1 +- sqrt(1 +8*x_min)) / 2
+    let v_x_min = (-1 + ((1 + 8 * target.x_min) as f64).sqrt().ceil() as i32) / 2;
+    let v_x_max = target.x_max; // single step
+
+    let v_y_min = target.y_min; // single step
+    let v_y_max = -target.y_min - 1; // highest arch
+
+    for v_x in v_x_min..=v_x_max {
+        for v_y in v_y_min..=v_y_max {
+            if target.hit(v_x, v_y) {
+                // println!("{}, {}", v_x, v_y);
+                num_velocities += 1;
+            }
+        }
+    }
+
+    num_velocities
 }
 
 #[cfg(test)]
@@ -97,18 +147,18 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 4278); //4371 is too high
+        assert_eq!(actual, 4278);
     }
 
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&parse(&ex1()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 112);
     }
 
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 1994);
     }
 }
