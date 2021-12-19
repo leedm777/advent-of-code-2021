@@ -68,8 +68,46 @@ impl SnailfishNumber {
         r
     }
 
+    fn _explode(&mut self, depth: u32) -> bool {
+        // If any pair is nested inside four pairs, the leftmost such pair explodes.
+        if depth == 4 {
+            // TODO
+            // panic!("4th level: {}", self.to_string());
+            self = SnailfishElement::Number(0);
+            return true;
+        }
+
+        let exploded = if let SnailfishElement::Pair(n) = &mut self.left {
+            n._explode(depth + 1)
+        } else {
+            false
+        };
+
+        exploded
+            || if let SnailfishElement::Pair(n) = &mut self.right {
+                n._explode(depth + 1)
+            } else {
+                false
+            }
+    }
+    fn explode(&mut self) -> bool {
+        self._explode(0)
+    }
+    fn split(&mut self) -> bool {
+        false
+    }
     fn reduce(&mut self) {
-        // TODO
+        loop {
+            if self.explode() {
+                continue;
+            }
+
+            if self.split() {
+                continue;
+            }
+
+            break;
+        }
     }
 }
 
@@ -178,6 +216,24 @@ mod tests {
             .unwrap();
 
         assert_eq!(actual.to_string(), "[[[[1,1],[2,2]],[3,3]],[4,4]]");
+    }
+
+    #[test]
+    fn test_explode_1() {
+        let input = "[[[[[9,8],1],2],3],4]";
+        let mut actual = SnailfishNumber::parse(input);
+        let exploded = actual.explode();
+        assert_eq!(actual.to_string(), "[[[[0,9],2],3],4]");
+        assert!(exploded);
+    }
+
+    #[test]
+    fn test_explode_2() {
+        let input = "[[[[0,9],2],3],4]";
+        let mut actual = SnailfishNumber::parse(input);
+        let exploded = actual.explode();
+        assert_eq!(actual.to_string(), "[[[[0,9],2],3],4]");
+        assert!(!exploded);
     }
 
     #[test]
