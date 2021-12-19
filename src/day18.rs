@@ -1,3 +1,4 @@
+#[derive(Clone)]
 enum SnailfishElement {
     Number(u32),
     Pair(Box<SnailfishNumber>),
@@ -36,13 +37,14 @@ impl ToString for SnailfishElement {
     }
 }
 
+#[derive(Clone)]
 pub struct SnailfishNumber {
     left: SnailfishElement,
     right: SnailfishElement,
 }
 
 impl SnailfishNumber {
-    fn parse(input: &str) -> SnailfishNumber {
+    fn parse(input: &str) -> Self {
         match SnailfishElement::parse(input) {
             (SnailfishElement::Pair(p), rem) => {
                 if !rem.is_empty() {
@@ -53,6 +55,21 @@ impl SnailfishNumber {
             }
             _ => panic!("Invalid number"),
         }
+    }
+
+    fn sum(&self, rhs: &Self) -> Self {
+        let mut r = Self {
+            left: SnailfishElement::Pair(Box::new(self.clone())),
+            right: SnailfishElement::Pair(Box::new(rhs.clone())),
+        };
+
+        r.reduce();
+
+        r
+    }
+
+    fn reduce(&mut self) {
+        // TODO
     }
 }
 
@@ -140,6 +157,38 @@ mod tests {
         let input = "[[[[1,3],[5,3]],[[1,3],[8,7]]],[[[4,9],[6,9]],[[8,2],[7,3]]]]";
         let actual = SnailfishNumber::parse(input);
         assert_eq!(actual.to_string(), input);
+    }
+
+    #[test]
+    fn test_sum_1() {
+        // [1,2] + [[3,4],5]
+        let lhs = SnailfishNumber::parse("[1,2]");
+        let rhs = SnailfishNumber::parse("[[3,4],5]");
+
+        let actual = lhs.sum(&rhs);
+        assert_eq!(actual.to_string(), "[[1,2],[[3,4],5]]");
+    }
+
+    #[test]
+    fn test_sum_2() {
+        let actual = ["[1,1]", "[2,2]", "[3,3]", "[4,4]"]
+            .iter()
+            .map(|&s| SnailfishNumber::parse(s))
+            .reduce(|n1, n2| n1.sum(&n2))
+            .unwrap();
+
+        assert_eq!(actual.to_string(), "[[[[1,1],[2,2]],[3,3]],[4,4]]");
+    }
+
+    #[test]
+    fn test_sum_3() {
+        let actual = ["[1,1]", "[2,2]", "[3,3]", "[4,4]", "[5,5]"]
+            .iter()
+            .map(|&s| SnailfishNumber::parse(s))
+            .reduce(|n1, n2| n1.sum(&n2))
+            .unwrap();
+
+        assert_eq!(actual.to_string(), "[[[[3,0],[5,3]],[4,4]],[5,5]]")
     }
 
     #[test]
