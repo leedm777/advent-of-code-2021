@@ -69,27 +69,33 @@ impl SnailfishNumber {
     }
 
     fn _explode(&mut self, depth: u32) -> bool {
-        // If any pair is nested inside four pairs, the leftmost such pair explodes.
-        if depth == 4 {
-            // TODO
-            // panic!("4th level: {}", self.to_string());
-            self = SnailfishElement::Number(0);
-            return true;
+        if depth == 3 {
+            match &mut self.left {
+                SnailfishElement::Pair(_) => {
+                    self.left = SnailfishElement::Number(0);
+                    return true;
+                }
+                _ => match &mut self.right {
+                    SnailfishElement::Pair(_) => {
+                        self.right = SnailfishElement::Number(0);
+                        return true;
+                    }
+                    _ => (),
+                },
+            };
+
+            return false;
         }
 
-        let exploded = if let SnailfishElement::Pair(n) = &mut self.left {
-            n._explode(depth + 1)
-        } else {
-            false
-        };
-
-        exploded
-            || if let SnailfishElement::Pair(n) = &mut self.right {
-                n._explode(depth + 1)
-            } else {
-                false
-            }
+        match &mut self.left {
+            SnailfishElement::Pair(n) => n._explode(depth + 1),
+            _ => match &mut self.right {
+                SnailfishElement::Pair(n) => n._explode(depth + 1),
+                _ => false,
+            },
+        }
     }
+
     fn explode(&mut self) -> bool {
         self._explode(0)
     }
