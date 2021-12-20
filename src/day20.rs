@@ -5,17 +5,20 @@ pub struct MapImage {
     max_x: i32,
     min_y: i32,
     max_y: i32,
+
+    default_bit: bool,
 }
 
 impl MapImage {
     fn new(image_enhancement: Vec<bool>) -> MapImage {
         MapImage {
-            image_enhancement: image_enhancement,
+            image_enhancement,
             image: std::collections::HashSet::new(),
             min_x: i32::MAX,
             max_x: i32::MIN,
             min_y: i32::MAX,
             max_y: i32::MIN,
+            default_bit: false,
         }
     }
 
@@ -36,11 +39,16 @@ impl MapImage {
     }
 
     fn get_pixel(&self, x: i32, y: i32) -> bool {
+        if x < self.min_x || x > self.max_x || y < self.min_y || y > self.max_y {
+            return self.default_bit;
+        }
+
         self.image.contains(&(x, y))
     }
 
     fn enhance(&self) -> MapImage {
         let mut enhanced = MapImage::new(self.image_enhancement.clone());
+        enhanced.default_bit = self.image_enhancement[0] && !self.default_bit;
 
         for y in (self.min_y - 1)..=(self.max_y + 1) {
             for x in (self.min_x - 1)..=(self.max_x + 1) {
@@ -122,11 +130,11 @@ pub fn parse(input: &str) -> MapImage {
 }
 
 pub fn part1(image: &MapImage) -> usize {
-    println!("{}", image.to_string());
+    // println!("{}", image.to_string());
     let round1 = image.enhance();
-    println!("{}", round1.to_string());
+    // println!("{}", round1.to_string());
     let round2 = round1.enhance();
-    println!("{}", round2.to_string());
+    // println!("{}", round2.to_string());
 
     round2.image.len()
 }
@@ -165,7 +173,7 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0); // 5127 is too high
+        assert_eq!(actual, 4964);
     }
 
     #[test]
