@@ -1,8 +1,7 @@
-pub struct Puzzle {
-}
+pub struct Puzzle {}
 
 pub fn parse(input: &str) -> Puzzle {
-    input.lines().collect()
+    Puzzle {}
 }
 
 pub fn part1(_input: &Puzzle) -> i32 {
@@ -19,14 +18,11 @@ mod tests {
     use crate::util;
 
     fn ex1() -> String {
-        vec![
-            "TODO",
-        ]
-        .join("\n")
+        vec!["TODO"].join("\n")
     }
 
     fn real() -> String {
-       util::read_input(19)
+        util::read_input(19)
     }
 
     #[test]
