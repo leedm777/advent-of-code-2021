@@ -130,10 +130,25 @@ impl SnailfishNumber {
             }
             SnailfishElement::Pair(n) => {
                 if depth == 3 {
-                    // explode!
-                    self.left = SnailfishElement::Value(0);
-                    // TODO
-                    return None;
+                    // capture the values
+                    if let SnailfishElement::Value(lhs) = n.left {
+                        if let SnailfishElement::Value(rhs) = n.right {
+                            // explode!
+                            self.left = SnailfishElement::Value(0);
+
+                            // TODO: wat?
+                            // if let Some(prior) = prior_value {
+                            //     *prior += lhs;
+                            // }
+
+                            // TODO: Maybe add to self.right?
+                            return Some(rhs);
+                        } else {
+                            panic!("Right side should have been a value");
+                        }
+                    } else {
+                        panic!("Left side should have been a value");
+                    }
                 }
                 n._explode(depth + 1, prior_value, add_to_next)
             }
