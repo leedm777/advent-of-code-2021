@@ -1,6 +1,6 @@
 #[derive(Clone)]
 enum SnailfishElement {
-    Number(u32),
+    Value(u32),
     Pair(Box<SnailfishNumber>),
 }
 
@@ -21,7 +21,7 @@ impl SnailfishElement {
                 (SnailfishElement::Pair(Box::new(number)), &rem[1..])
             }
             Some(n) => {
-                let number = SnailfishElement::Number(n.to_digit(10).expect("Invalid number"));
+                let number = SnailfishElement::Value(n.to_digit(10).expect("Invalid number"));
                 (number, &input[1..])
             }
             None => panic!("Invalid element"),
@@ -31,7 +31,7 @@ impl SnailfishElement {
 impl ToString for SnailfishElement {
     fn to_string(&self) -> String {
         match self {
-            SnailfishElement::Number(n) => n.to_string(),
+            SnailfishElement::Value(n) => n.to_string(),
             SnailfishElement::Pair(p) => p.to_string(),
         }
     }
@@ -68,40 +68,66 @@ impl SnailfishNumber {
         r
     }
 
-    fn _explode(&mut self, depth: u32) -> bool {
-        if depth == 3 {
+    fn _explode(
+        &mut self,
+        depth: u32,
+        prior_value: Option<&mut u32>,
+        add_to_next: Option<u32>,
+    ) -> Option<u32> {
+        if let Some(add) = add_to_next {
+            // pair has been exploded; add to the next number we find
+
+            // unless we have nothing to add, then return fast
+            if add == 0 {
+                return Some(0);
+            }
+
+            // find a number of the left
             match &mut self.left {
-                SnailfishElement::Pair(_) => {
-                    self.left = SnailfishElement::Number(0);
-                    return true;
+                SnailfishElement::Value(n) => {
+                    self.left = SnailfishElement::Value(*n + add);
+                    return Some(0);
                 }
-                _ => match &mut self.right {
-                    SnailfishElement::Pair(_) => {
-                        self.right = SnailfishElement::Number(0);
-                        return true;
+
+                SnailfishElement::Pair(n) => {
+                    if let Some(n) = n._explode(depth + 1, None, add_to_next) {
+                        if n == 0 {
+                            return Some(0);
+                        }
                     }
-                    _ => (),
-                },
-            };
+                }
+            }
 
-            return false;
+            // find a number on the right
+            match &mut self.right {
+                SnailfishElement::Value(n) => {
+                    self.right = SnailfishElement::Value(*n + add);
+                    return Some(0);
+                }
+
+                SnailfishElement::Pair(n) => {
+                    if let Some(n) = n._explode(depth + 1, None, add_to_next) {
+                        if n == 0 {
+                            return Some(0);
+                        }
+                    }
+                }
+            }
+
+            // not found; pass to parent
+            return add_to_next;
         }
 
-        match &mut self.left {
-            SnailfishElement::Pair(n) => n._explode(depth + 1),
-            _ => match &mut self.right {
-                SnailfishElement::Pair(n) => n._explode(depth + 1),
-                _ => false,
-            },
-        }
+        None
     }
-
     fn explode(&mut self) -> bool {
-        self._explode(0)
+        self._explode(0, None, None) != None
     }
+
     fn split(&mut self) -> bool {
         false
     }
+
     fn reduce(&mut self) {
         loop {
             if self.explode() {
