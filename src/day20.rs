@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct MapImage {
     image_enhancement: Vec<bool>,
     image: std::collections::HashSet<(i32, i32)>,
@@ -139,8 +140,14 @@ pub fn part1(image: &MapImage) -> usize {
     round2.image.len()
 }
 
-pub fn part2(_input: &MapImage) -> i32 {
-    0
+pub fn part2(image: &MapImage) -> usize {
+    let mut image = image.clone();
+
+    for _ in 0..50 {
+        image = image.enhance();
+    }
+
+    image.image.len()
 }
 
 #[cfg(test)]
@@ -179,12 +186,12 @@ mod tests {
     #[test]
     fn test_part2_ex1() {
         let actual = part2(&parse(&ex1()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 3351);
     }
 
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 13202);
     }
 }
