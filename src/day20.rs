@@ -54,6 +54,7 @@ impl MapImage {
                     }
                 }
 
+                // println!("({},{}) -> {} == {}", x, y, v, self.image_enhancement[v]);
                 if self.image_enhancement[v] {
                     enhanced.set_pixel(x, y);
                 }
@@ -61,6 +62,27 @@ impl MapImage {
         }
 
         enhanced
+    }
+}
+
+impl ToString for MapImage {
+    fn to_string(&self) -> String {
+        let mut s = format!(
+            "({}, {}) -> ({}, {})\n",
+            self.min_x, self.min_y, self.max_y, self.max_y
+        );
+        for y in self.min_y..=self.max_y {
+            for x in self.min_x..=self.max_x {
+                if self.get_pixel(x, y) {
+                    s += "#";
+                } else {
+                    s += ".";
+                }
+            }
+            s += "\n";
+        }
+
+        s
     }
 }
 
@@ -100,8 +122,11 @@ pub fn parse(input: &str) -> MapImage {
 }
 
 pub fn part1(image: &MapImage) -> usize {
+    println!("{}", image.to_string());
     let round1 = image.enhance();
+    println!("{}", round1.to_string());
     let round2 = round1.enhance();
+    println!("{}", round2.to_string());
 
     round2.image.len()
 }
