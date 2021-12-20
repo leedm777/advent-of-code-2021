@@ -49,6 +49,8 @@ impl MapImage {
 
     fn enhance(&self) -> MapImage {
         let mut enhanced = MapImage::new(self.image_enhancement.clone());
+        // if enhancment[0] is true, then that infinite field of pixels in all directions flashes
+        // on and off with every enhancement
         enhanced.default_bit = self.image_enhancement[0] && !self.default_bit;
 
         for y in (self.min_y - 1)..=(self.max_y + 1) {
