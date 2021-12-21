@@ -32,43 +32,6 @@ pub fn parse(input: &str) -> GameBoard {
     GameBoard { player1, player2 }
 }
 
-pub fn part1(starting: &GameBoard) -> u32 {
-    let mut pos1 = starting.player1;
-    let mut pos2 = starting.player2;
-    let mut next_roll = 1;
-    let mut score1 = 0u16;
-    let mut score2 = 0u16;
-    let mut num_rolls = 0;
-
-    loop {
-        let roll = 3 * (next_roll + next_roll + 2) / 2;
-        next_roll = (next_roll + 3 - 1) % 100 + 1;
-        num_rolls += 3;
-        // print!("p1 {} + {} -> ", pos1, roll);
-        pos1 = (pos1 + roll - 1) % 10 + 1;
-        score1 += pos1;
-        // println!("{} => {}", pos1, score1);
-
-        if score1 >= 1000 {
-            break;
-        }
-
-        let roll = 3 * (next_roll + next_roll + 2) / 2;
-        next_roll = (next_roll + 3 - 1) % 100 + 1;
-        num_rolls += 3;
-        // print!("p2 {} + {} -> ", pos2, roll);
-        pos2 = (pos2 + roll - 1) % 10 + 1;
-        score2 += pos2;
-        // println!("{} => {}", pos2, score2);
-
-        if score2 >= 1000 {
-            break;
-        }
-    }
-
-    score1.min(score2) as u32 * num_rolls
-}
-
 #[derive(Clone, Copy)]
 struct Player {
     score: u16,
@@ -82,10 +45,46 @@ impl Player {
 
     fn mv(&self, spaces: u16) -> Player {
         let position = (self.position + spaces - 1) % 10 + 1;
-        let score = self.score + self.position;
+        let score = self.score + position;
+        // println!(
+        //     "{} + {} -> {} ({})",
+        //     self.position,
+        //     spaces,
+        //     position,
+        //     (score)
+        // );
 
         Player { score, position }
     }
+}
+
+pub fn part1(starting: &GameBoard) -> u32 {
+    let mut player1 = Player::new(starting.player1);
+    let mut player2 = Player::new(starting.player2);
+    let mut next_roll = 1;
+    let mut num_rolls = 0;
+
+    loop {
+        let roll = 3 * (next_roll + next_roll + 2) / 2;
+        next_roll = (next_roll + 3 - 1) % 100 + 1;
+        num_rolls += 3;
+        player1 = player1.mv(roll);
+
+        if player1.score >= 1000 {
+            break;
+        }
+
+        let roll = 3 * (next_roll + next_roll + 2) / 2;
+        next_roll = (next_roll + 3 - 1) % 100 + 1;
+        num_rolls += 3;
+        player2 = player2.mv(roll);
+
+        if player2.score >= 1000 {
+            break;
+        }
+    }
+
+    player1.score.min(player2.score) as u32 * num_rolls
 }
 
 struct ParallelGame {
@@ -151,7 +150,7 @@ pub fn part2(starting: &GameBoard) -> usize {
 
     let (p1, p2) = g.play();
 
-    println!("({}, {})", p1, p2);
+    // println!("({}, {})", p1, p2);
     p1.max(p2)
 }
 
@@ -204,6 +203,6 @@ mod tests {
     #[test]
     fn test_part2_real() {
         let actual = part2(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 919758187195363);
     }
 }
