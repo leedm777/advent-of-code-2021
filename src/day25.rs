@@ -15,6 +15,7 @@ impl Location {
     }
 }
 
+#[derive(Clone)]
 pub struct SeaCucumbers {
     map: Vec<Vec<Location>>,
 }
@@ -35,8 +36,9 @@ impl ToString for SeaCucumbers {
 }
 
 impl SeaCucumbers {
-    fn step(&self) -> Self {
+    fn step(&self) -> (Self, bool) {
         let mut half_step_map = self.map.clone();
+        let mut moved = false;
 
         // move east facing sea cucumbers
         for y in 0..self.map.len() {
@@ -49,6 +51,7 @@ impl SeaCucumbers {
                 let west = self.map[y][west_x];
 
                 if loc == Location::Empty && west == Location::EastFacing {
+                    moved = true;
                     half_step_map[y][west_x] = Location::Empty;
                     half_step_map[y][x] = Location::EastFacing;
                 }
@@ -70,13 +73,14 @@ impl SeaCucumbers {
                 let north = half_step_map[north_y][x];
 
                 if loc == Location::Empty && north == Location::SouthFacing {
+                    moved = true;
                     map[north_y][x] = Location::Empty;
                     map[y][x] = Location::SouthFacing;
                 }
             }
         }
 
-        SeaCucumbers { map }
+        (SeaCucumbers { map }, moved)
     }
 }
 
@@ -100,8 +104,20 @@ pub fn parse(input: &str) -> SeaCucumbers {
     SeaCucumbers { map }
 }
 
-pub fn part1(_input: &SeaCucumbers) -> i32 {
-    0
+pub fn part1(input: &SeaCucumbers) -> i32 {
+    let mut counter = 0;
+    let mut input = input.clone();
+    let mut moved = true;
+
+    while moved {
+        // println!("After {} steps:\n{}\n", counter, input.to_string());
+        let step = input.step();
+        input = step.0;
+        moved = step.1;
+        counter += 1;
+    }
+
+    counter
 }
 
 pub fn part2(_input: &SeaCucumbers) -> i32 {
@@ -156,12 +172,13 @@ mod tests {
     #[test]
     fn test_step_ex2() {
         let v = parse(&ex2());
-        let actual = v.step();
+        let (actual, moved) = v.step();
         let expected = vec![
             "..vv>..", ".......", ">......", "v.....>", ">......", ".......", "....v..",
         ]
         .join("\n");
         assert_eq!(actual.to_string(), expected);
+        assert!(moved);
     }
     #[test]
     fn test_part1_ex1() {
@@ -172,7 +189,7 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 557);
     }
 
     #[test]
