@@ -8,20 +8,20 @@ enum Amphipod {
 impl Amphipod {
     fn parse(ch: char) -> Amphipod {
         match ch {
-            'A' => BurrowSpace::Amber,
-            'B' => BurrowSpace::Bronze,
-            'C' => BurrowSpace::Copper,
-            'D' => BurrowSpace::Desert,
+            'A' => Amphipod::Amber,
+            'B' => Amphipod::Bronze,
+            'C' => Amphipod::Copper,
+            'D' => Amphipod::Desert,
             _ => panic!("Invalid char {}", ch),
         }
     }
 
     fn energy(&self) -> usize {
         match self {
-            BurrowSpace::Amber => 1,
-            BurrowSpace::Bronze => 10,
-            BurrowSpace::Copper => 100,
-            BurrowSpace::Desert => 1000,
+            Amphipod::Amber => 1,
+            Amphipod::Bronze => 10,
+            Amphipod::Copper => 100,
+            Amphipod::Desert => 1000,
         }
     }
 }
@@ -32,9 +32,7 @@ pub struct AmphipodBurrow {
 
 pub fn parse(input: &str) -> AmphipodBurrow {
     // maybe the maze is a digraph, marking the goals for the different rooms?
-    AmphipodBurrow {
-        total_energy: usize,
-    }
+    AmphipodBurrow { total_energy: 0 }
 }
 
 pub fn part1(_input: &AmphipodBurrow) -> i32 {
@@ -63,12 +61,6 @@ mod tests {
 
     fn real() -> String {
         util::read_input(23)
-    }
-
-    #[test]
-    fn test_parse() {
-        let actual = parse(&ex1());
-        assert_eq!(actual.to_string().trim(), ex1());
     }
 
     #[test]
