@@ -1,13 +1,14 @@
 use regex::Regex;
 use std::collections::HashMap;
 
+#[derive(Clone)]
 enum Value {
-    Literal(i32),
+    Literal(i64),
     Variable(char),
 }
 
 impl Value {
-    fn get(&self, alu: &ALU) -> i32 {
+    fn get(&self, alu: &ALU) -> i64 {
         match self {
             Value::Literal(v) => *v,
             Value::Variable(v) => alu.get(*v),
@@ -15,6 +16,7 @@ impl Value {
     }
 }
 
+#[derive(Clone)]
 enum Operation {
     Inp(char),
     Add(char, Value),
@@ -45,7 +47,7 @@ impl Operation {
         }
 
         let b = cap.name("b").expect("Missing b").as_str();
-        let b = match b.parse::<i32>() {
+        let b = match b.parse::<i64>() {
             Ok(v) => Value::Literal(v),
             _ => Value::Variable(b.chars().next().expect("Invalid b")),
         };
@@ -96,18 +98,19 @@ impl Operation {
     }
 }
 
+#[derive(Clone)]
 pub struct ALU {
     program: Vec<Operation>,
-    memory: HashMap<char, i32>,
-    input: Vec<i32>,
+    memory: HashMap<char, i64>,
+    input: Vec<i64>,
 }
 
 impl ALU {
-    fn get(&self, ch: char) -> i32 {
+    fn get(&self, ch: char) -> i64 {
         *self.memory.get(&ch).unwrap_or(&0)
     }
 
-    fn set(&mut self, ch: char, v: i32) {
+    fn set(&mut self, ch: char, v: i64) {
         self.memory.insert(ch, v);
     }
 
@@ -126,11 +129,19 @@ pub fn parse(input: &str) -> ALU {
     };
 }
 
-pub fn part1(_input: &ALU) -> i32 {
-    0
+pub fn part1(alu: &ALU) -> i64 {
+    let mut alu = alu.clone();
+    alu.input = vec![9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+    alu.run();
+
+    for (k, v) in alu.memory.iter() {
+        println!("{} => {}", k, v);
+    }
+
+    -1
 }
 
-pub fn part2(_input: &ALU) -> i32 {
+pub fn part2(_input: &ALU) -> i64 {
     0
 }
 
