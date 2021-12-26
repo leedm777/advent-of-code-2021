@@ -130,12 +130,30 @@ pub fn parse(input: &str) -> ALU {
 }
 
 pub fn part1(alu: &ALU) -> i64 {
-    let mut alu = alu.clone();
-    alu.input = vec![9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
-    alu.run();
+    for i in (11111111111111i64..=99999999999999i64).rev() {
+        let mut alu = alu.clone();
+        alu.input = vec![];
+        for d in 0..14 {
+            alu.input.push((i / 10i64.pow(d)) % 10)
+        }
+        if alu.input.contains(&0) {
+            continue;
+        }
+        alu.run();
+        /*
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+        println!("{}", i);
+        for (k, v) in alu.memory.iter() {
+            println!("{} => {}", k, v);
+        }
+        println!();
+         */
 
-    for (k, v) in alu.memory.iter() {
-        println!("{} => {}", k, v);
+        println!("{} => {}", i, alu.get('z'));
+
+        if alu.get('z') == 0 {
+            return i;
+        }
     }
 
     -1
