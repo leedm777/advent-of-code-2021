@@ -119,6 +119,13 @@ impl ALU {
             op.exec(self);
         }
     }
+
+    fn run_input(&self, input: &Vec<i64>) -> Self {
+        let mut alu = self.clone();
+        alu.input = input.clone();
+        alu.run();
+        alu
+    }
 }
 
 pub fn parse(input: &str) -> ALU {
@@ -129,9 +136,37 @@ pub fn parse(input: &str) -> ALU {
     };
 }
 
-pub fn part1(alu: &ALU) -> i64 {
+pub fn part1(init: &ALU) -> i64 {
+    let mut input = vec![9i64; 14];
+
+    for _ in 0..3 {
+        for digit in (0..14).rev() {
+            let mut min_z = i64::MAX;
+            let mut min_digit = 0i64;
+            for i in (1..=9) {
+                input[digit] = i;
+                let next = init.run_input(&input);
+                let z = next.get('z');
+                if z == 0 {
+                    return input_to_i64(&input);
+                }
+                if z < min_z {
+                    min_z = z;
+                    min_digit = i;
+                }
+            }
+            input[digit] = min_digit;
+            let next = init.run_input(&input);
+            println!("{} => {}", input_to_i64(&input), next.get('z'));
+        }
+        println!();
+    }
+
+    -1
+
+    /*
     for i in (11111111111111i64..=99999999999999i64).rev() {
-        let mut alu = alu.clone();
+        let mut alu = init.clone();
         alu.input = vec![];
         for d in 0..14 {
             alu.input.push((i / 10i64.pow(d)) % 10)
@@ -157,6 +192,11 @@ pub fn part1(alu: &ALU) -> i64 {
     }
 
     -1
+     */
+}
+
+fn input_to_i64(input: &Vec<i64>) -> i64 {
+    input.iter().fold(0, |acc, d| acc * 10 + d)
 }
 
 pub fn part2(_input: &ALU) -> i64 {
