@@ -137,13 +137,13 @@ pub fn parse(input: &str) -> ALU {
 }
 
 pub fn part1(init: &ALU) -> i64 {
-    let mut input = vec![9i64; 14];
+    let mut input = vec![1i64; 14];
     let mut best = input.clone();
     let mut min_z = i64::MAX;
 
     // find the best we can with single digits
     loop {
-        for digit in (0..14).rev() {
+        for digit in 0..14 {
             let mut min_digit = 0i64;
             for i in 1..=9 {
                 input[digit] = i;
@@ -170,13 +170,17 @@ pub fn part1(init: &ALU) -> i64 {
 
     // double digits
     loop {
-        for digit1 in (0..14).rev() {
+        for digit1 in 0..14 {
             let mut min_digit1 = input[digit1];
 
             for i in 1..=9 {
                 input[digit1] = i;
 
-                for digit2 in (0..14).rev() {
+                for digit2 in 0..14 {
+                    if digit1 == digit2 {
+                        continue;
+                    }
+
                     let mut min_digit2 = input[digit2];
                     for j in 1..=9 {
                         input[digit2] = j;
@@ -217,7 +221,7 @@ pub fn part1(init: &ALU) -> i64 {
 }
 
 fn input_to_i64(input: &Vec<i64>) -> i64 {
-    input.iter().fold(0, |acc, d| acc * 10 + d)
+    input.iter().rev().fold(0, |acc, d| acc * 10 + d)
 }
 
 pub fn part2(_input: &ALU) -> i64 {
@@ -268,6 +272,8 @@ mod tests {
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
         assert_eq!(actual, 0); // 83719996499591 is too high
+                               // 19599469991738 is too low
+                               // 29599458991739 is too low
     }
 
     #[test]
