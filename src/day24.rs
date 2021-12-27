@@ -1,7 +1,33 @@
 use regex::Regex;
 use std::collections::HashMap;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
+enum Op {
+    Add,
+    Mul,
+    Div,
+    Mod,
+    Eql,
+}
+
+#[derive(Clone, Debug)]
+enum Expression {
+    Constant(i64),
+    Input(u8),
+    Calculation(Op, Box<Expression>, Box<Expression>),
+}
+
+impl ToString for Expression {
+    fn to_string(&self) -> String {
+        match self {
+            Expression::Constant(c) => format!("{}", c),
+            Expression::Input(i) => format!("i{}", i),
+            Expression::Calculation(op, lhs, rhs) => format!("({:?} {:?} {:?})", op, lhs, rhs),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 enum Value {
     Literal(i64),
     Variable(char),
@@ -14,9 +40,16 @@ impl Value {
             Value::Variable(v) => alu.get(*v),
         }
     }
+
+    fn meta_get(&self, alu: &ALU) -> Expression {
+        match self {
+            Value::Literal(v) => Expression::Constant(*v),
+            Value::Variable(v) => alu.meta_get(*v).clone(),
+        }
+    }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum Operation {
     Inp(char),
     Add(char, Value),
@@ -96,6 +129,59 @@ impl Operation {
             }
         }
     }
+
+    fn meta_exec(&self, alu: &mut ALU) {
+        println!("{:?}", self);
+        match self {
+            Operation::Inp(ch) => {
+                let i = alu.next_input;
+                alu.next_input += 1;
+
+                let v = Expression::Input(i);
+                alu.meta_set(*ch, v);
+            }
+            Operation::Add(ch, v) => {
+                let lhs = alu.meta_get(*ch).clone();
+                let rhs = v.meta_get(alu);
+                alu.meta_set(
+                    *ch,
+                    Expression::Calculation(Op::Add, Box::new(lhs), Box::new(rhs)),
+                );
+            }
+            Operation::Mul(ch, v) => {
+                let lhs = alu.meta_get(*ch).clone();
+                let rhs = v.meta_get(alu);
+                alu.meta_set(
+                    *ch,
+                    Expression::Calculation(Op::Mul, Box::new(lhs), Box::new(rhs)),
+                );
+            }
+            Operation::Div(ch, v) => {
+                let lhs = alu.meta_get(*ch).clone();
+                let rhs = v.meta_get(alu);
+                alu.meta_set(
+                    *ch,
+                    Expression::Calculation(Op::Div, Box::new(lhs), Box::new(rhs)),
+                );
+            }
+            Operation::Mod(ch, v) => {
+                let lhs = alu.meta_get(*ch).clone();
+                let rhs = v.meta_get(alu);
+                alu.meta_set(
+                    *ch,
+                    Expression::Calculation(Op::Mod, Box::new(lhs), Box::new(rhs)),
+                );
+            }
+            Operation::Eql(ch, v) => {
+                let lhs = alu.meta_get(*ch).clone();
+                let rhs = v.meta_get(alu);
+                alu.meta_set(
+                    *ch,
+                    Expression::Calculation(Op::Eql, Box::new(lhs), Box::new(rhs)),
+                );
+            }
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -103,6 +189,9 @@ pub struct ALU {
     program: Vec<Operation>,
     memory: HashMap<char, i64>,
     input: Vec<i64>,
+
+    meta_memory: HashMap<char, Expression>,
+    next_input: u8,
 }
 
 impl ALU {
@@ -114,9 +203,23 @@ impl ALU {
         self.memory.insert(ch, v);
     }
 
+    fn meta_get(&self, ch: char) -> &Expression {
+        self.meta_memory.get(&ch).expect("Unexpected variable")
+    }
+
+    fn meta_set(&mut self, ch: char, v: Expression) {
+        self.meta_memory.insert(ch, v);
+    }
+
     fn run(&mut self) {
         while let Some(op) = self.program.pop() {
             op.exec(self);
+        }
+    }
+
+    fn meta_run(&mut self) {
+        while let Some(op) = self.program.pop() {
+            op.meta_exec(self);
         }
     }
 
@@ -129,14 +232,29 @@ impl ALU {
 }
 
 pub fn parse(input: &str) -> ALU {
+    let mut meta_memory = HashMap::new();
+    meta_memory.insert('w', Expression::Constant(0));
+    meta_memory.insert('x', Expression::Constant(0));
+    meta_memory.insert('y', Expression::Constant(0));
+    meta_memory.insert('z', Expression::Constant(0));
+
     return ALU {
         program: input.lines().map(Operation::parse).rev().collect(),
         memory: HashMap::new(),
         input: vec![],
+
+        meta_memory,
+        next_input: 0,
     };
 }
 
 pub fn part1(init: &ALU) -> i64 {
+    let mut meta = init.clone();
+    meta.meta_run();
+
+    println!("{:?}", meta.meta_get('z'));
+
+    /*
     let mut input = vec![1i64; 14];
     let mut best = input.clone();
     let mut min_z = i64::MAX;
@@ -216,6 +334,7 @@ pub fn part1(init: &ALU) -> i64 {
         // slight improvement; keep trying
         best = input.clone();
     }
+     */
 
     -1
 }
