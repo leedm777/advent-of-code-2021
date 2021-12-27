@@ -138,19 +138,21 @@ pub fn parse(input: &str) -> ALU {
 
 pub fn part1(init: &ALU) -> i64 {
     let mut input = vec![9i64; 14];
+    let mut best = input.clone();
+    let mut min_z = i64::MAX;
 
-    for _ in 0..3 {
+    // find the best we can with single digits
+    loop {
         for digit in (0..14).rev() {
-            let mut min_z = i64::MAX;
             let mut min_digit = 0i64;
-            for i in (1..=9) {
+            for i in 1..=9 {
                 input[digit] = i;
                 let next = init.run_input(&input);
                 let z = next.get('z');
                 if z == 0 {
                     return input_to_i64(&input);
                 }
-                if z < min_z {
+                if z <= min_z {
                     min_z = z;
                     min_digit = i;
                 }
@@ -160,39 +162,58 @@ pub fn part1(init: &ALU) -> i64 {
             println!("{} => {}", input_to_i64(&input), next.get('z'));
         }
         println!();
+        if best == input {
+            break;
+        }
+        best = input.clone();
     }
 
-    -1
+    // double digits
+    loop {
+        for digit1 in (0..14).rev() {
+            let mut min_digit1 = input[digit1];
 
-    /*
-    for i in (11111111111111i64..=99999999999999i64).rev() {
-        let mut alu = init.clone();
-        alu.input = vec![];
-        for d in 0..14 {
-            alu.input.push((i / 10i64.pow(d)) % 10)
-        }
-        if alu.input.contains(&0) {
-            continue;
-        }
-        alu.run();
-        /*
-        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-        println!("{}", i);
-        for (k, v) in alu.memory.iter() {
-            println!("{} => {}", k, v);
+            for i in 1..=9 {
+                input[digit1] = i;
+
+                for digit2 in (0..14).rev() {
+                    let mut min_digit2 = input[digit2];
+                    for j in 1..=9 {
+                        input[digit2] = j;
+                        let next = init.run_input(&input);
+                        let z = next.get('z');
+                        if z == 0 {
+                            return input_to_i64(&input);
+                        }
+                        if z <= min_z {
+                            min_z = z;
+                            min_digit1 = i;
+                            min_digit2 = j;
+                        }
+                    }
+                    assert_ne!(min_digit2, 0);
+                    input[digit2] = min_digit2;
+                }
+            }
+
+            assert_ne!(min_digit1, 0);
+            input[digit1] = min_digit1;
+
+            let next = init.run_input(&input);
+            println!("{} => {}", input_to_i64(&input), next.get('z'));
         }
         println!();
-         */
 
-        println!("{} => {}", i, alu.get('z'));
-
-        if alu.get('z') == 0 {
-            return i;
+        // didn't find anything better; break
+        if best == input {
+            break;
         }
+
+        // slight improvement; keep trying
+        best = input.clone();
     }
 
     -1
-     */
 }
 
 fn input_to_i64(input: &Vec<i64>) -> i64 {
@@ -246,7 +267,7 @@ mod tests {
     #[test]
     fn test_part1_real() {
         let actual = part1(&parse(&real()));
-        assert_eq!(actual, 0);
+        assert_eq!(actual, 0); // 83719996499591 is too high
     }
 
     #[test]
