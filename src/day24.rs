@@ -1,15 +1,16 @@
 use regex::Regex;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 #[derive(Clone, Debug)]
 enum Expression {
     Constant(i64),
     Input(u8),
-    Add(Box<Expression>, Box<Expression>),
-    Mul(Box<Expression>, Box<Expression>),
-    Div(Box<Expression>, Box<Expression>),
-    Mod(Box<Expression>, Box<Expression>),
-    Eql(Box<Expression>, Box<Expression>),
+    Add(Rc<Expression>, Rc<Expression>),
+    Mul(Rc<Expression>, Rc<Expression>),
+    Div(Rc<Expression>, Rc<Expression>),
+    Mod(Rc<Expression>, Rc<Expression>),
+    Eql(Rc<Expression>, Rc<Expression>),
 }
 
 impl ToString for Expression {
@@ -17,11 +18,51 @@ impl ToString for Expression {
         match self {
             Expression::Constant(c) => c.to_string(),
             Expression::Input(i) => format!("i{}", i),
-            Expression::Add(lhs, rhs) => format!("{} + {}", lhs.to_string(), rhs.to_string()),
-            Expression::Mul(lhs, rhs) => format!("{} * {}", lhs.to_string(), rhs.to_string()),
-            Expression::Div(lhs, rhs) => format!("{} / {}", lhs.to_string(), rhs.to_string()),
-            Expression::Mod(lhs, rhs) => format!("{} % {}", lhs.to_string(), rhs.to_string()),
-            Expression::Eql(lhs, rhs) => format!("{} == {}", lhs.to_string(), rhs.to_string()),
+            Expression::Add(lhs, rhs) => format!("(+ {}\n   {})", lhs.to_string(), rhs.to_string()),
+            Expression::Mul(lhs, rhs) => format!("(* {}\n   {})", lhs.to_string(), rhs.to_string()),
+            Expression::Div(lhs, rhs) => format!("(/ {}\n   {})", lhs.to_string(), rhs.to_string()),
+            Expression::Mod(lhs, rhs) => format!("(% {}\n   {})", lhs.to_string(), rhs.to_string()),
+            Expression::Eql(lhs, rhs) => format!("(= {}\n   {})", lhs.to_string(), rhs.to_string()),
+        }
+    }
+}
+
+impl Expression {
+    fn print(&self) {
+        match self {
+            Expression::Constant(c) => print!("{}", c),
+            Expression::Input(i) => print!("i{}", i),
+            Expression::Add(lhs, rhs) => {
+                print!("(+ ");
+                lhs.print();
+                print!("\n   ");
+                rhs.print();
+            }
+            Expression::Mul(lhs, rhs) => {
+                print!("(* ");
+                lhs.print();
+                print!("\n   ");
+                rhs.print();
+                println!(")");
+            }
+            Expression::Div(lhs, rhs) => {
+                print!("(/ ");
+                lhs.print();
+                print!("\n   ");
+                rhs.print();
+            }
+            Expression::Mod(lhs, rhs) => {
+                print!("(% ");
+                lhs.print();
+                print!("\n   ");
+                rhs.print();
+            }
+            Expression::Eql(lhs, rhs) => {
+                print!("(= ");
+                lhs.print();
+                print!("\n   ");
+                rhs.print();
+            }
         }
     }
 }
@@ -109,7 +150,7 @@ impl Operation {
                     (Expression::Constant(lhs), Expression::Constant(rhs)) => {
                         Expression::Constant(lhs + *rhs)
                     }
-                    (lhs, rhs) => Expression::Add(Box::new(lhs), Box::new(rhs.clone())),
+                    (lhs, rhs) => Expression::Add(Rc::new(lhs), Rc::new(rhs.clone())),
                 };
                 alu.set(*ch, exp);
             }
@@ -136,7 +177,7 @@ impl Operation {
                     (Expression::Constant(lhs), Expression::Constant(rhs)) => {
                         Expression::Constant(lhs * *rhs)
                     }
-                    (lhs, rhs) => Expression::Mul(Box::new(lhs), Box::new(rhs.clone())),
+                    (lhs, rhs) => Expression::Mul(Rc::new(lhs), Rc::new(rhs.clone())),
                 };
                 alu.set(*ch, exp);
             }
@@ -163,7 +204,7 @@ impl Operation {
                     (Expression::Constant(lhs), Expression::Constant(rhs)) => {
                         Expression::Constant(lhs / *rhs)
                     }
-                    (lhs, rhs) => Expression::Div(Box::new(lhs), Box::new(rhs.clone())),
+                    (lhs, rhs) => Expression::Div(Rc::new(lhs), Rc::new(rhs.clone())),
                 };
                 alu.set(*ch, exp);
             }
@@ -190,7 +231,7 @@ impl Operation {
                     (Expression::Constant(lhs), Expression::Constant(rhs)) => {
                         Expression::Constant(lhs % *rhs)
                     }
-                    (lhs, rhs) => Expression::Mod(Box::new(lhs), Box::new(rhs.clone())),
+                    (lhs, rhs) => Expression::Mod(Rc::new(lhs), Rc::new(rhs.clone())),
                 };
                 alu.set(*ch, exp);
             }
@@ -222,12 +263,12 @@ impl Operation {
                             Expression::Constant(0)
                         } else {
                             Expression::Eql(
-                                Box::new(Expression::Input(inp)),
-                                Box::new(Expression::Constant(*rhs)),
+                                Rc::new(Expression::Input(inp)),
+                                Rc::new(Expression::Constant(*rhs)),
                             )
                         }
                     }
-                    (lhs, rhs) => Expression::Eql(Box::new(lhs), Box::new(rhs.clone())),
+                    (lhs, rhs) => Expression::Eql(Rc::new(lhs), Rc::new(rhs.clone())),
                 };
                 alu.set(*ch, exp);
             }
@@ -275,13 +316,7 @@ pub fn part1(init: &ALU) -> i64 {
     let mut meta = init.clone();
     meta.run();
 
-    let ch = 'z';
-    println!(
-        "{:?}",
-        meta.memory
-            .entry(ch)
-            .or_insert_with(|| Expression::Constant(0))
-    );
+    meta.get('z').print();
 
     -1
 }
